@@ -1,0 +1,99 @@
+﻿@page "/event/create"
+@rendermode InteractiveServer
+@inject EventValidationService EventValidationService
+
+<PageTitle>New Meetup</PageTitle>
+@if(!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+       @ErrorMessage
+    </div>
+}
+
+
+<h3>Create Event</h3>
+
+<EditForm Model="_eventViewModel" FormName="CreateNewMeetup"  OnValidSubmit="CreateMeetup">
+    <ValidationSummary></ValidationSummary>
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+
+   <div class="form-group">
+       <label for="title">Title</label>
+       <InputText @bind-Value="_eventViewModel.Title" id="title" class="form-control" />
+        <ValidationMessage For="@(() => _eventViewModel.Title)"></ValidationMessage>
+   </div>
+    <div class="form-group">
+        <label for="Desc">Descreption</label>
+        <InputText @bind-Value="_eventViewModel.Description" id="Desc" class="form-control" />
+        <ValidationMessage For="@(() => _eventViewModel.Description)"></ValidationMessage>
+    </div>
+    <div class="form-group">
+        <label for="begindate">Begin Date</label>
+        <InputDate @bind-Value="_eventViewModel.BeginDate" id="begindate" class="form-control" />
+        <ValidationMessage For="() => _eventViewModel.BeginDate"></ValidationMessage>
+    </div>
+
+    <div class="form-group">
+        <label for="begintime">Begin Time</label>
+        <input type="time"  @bind-value="_eventViewModel.BeginTime" id="begintime" class="form-control" />
+        <ValidationMessage For="() => _eventViewModel.BeginTime"></ValidationMessage>
+    </div>
+
+    <div class="form-group">
+        <label for="Enddate">End Date</label>
+        <InputDate @bind-Value="_eventViewModel.EndDate" id="Enddate" class="form-control" />
+        <ValidationMessage For="() => _eventViewModel.EndDate"></ValidationMessage>
+    </div>
+
+    <div class="form-group">
+        <label for="Endtime">End Time</label>
+        <input type="time" @bind-value="_eventViewModel.EndTime" id="Endtime" class="form-control" />
+        <ValidationMessage For="() => _eventViewModel.EndTime"></ValidationMessage>
+    </div>
+
+    <div class="form-group">
+        <label for="locatio ">Location</label>
+        <InputText @bind-value="_eventViewModel.Location" id="location" class="form-control" />
+        <ValidationMessage For="() => _eventViewModel.Location"></ValidationMessage>
+    </div>
+
+    <br />
+
+    <button type="submit" class="btn btn-primary">Create Meetup</button>
+    <a class="btn btn-secondary" href="/">Cencel</a>
+
+</EditForm>
+
+
+
+@code {
+
+    private EventViewModel _eventViewModel = new();
+    public string ErrorMessage = string.Empty;
+
+    private void CreateMeetup()
+    {
+        EventValidationService.SetModel(_eventViewModel);
+
+        var ValidatedDates = EventValidationService.ValidateDates();
+
+        if (!string.IsNullOrEmpty(ValidatedDates))
+            ErrorMessage = ValidatedDates;
+
+        var ValidatedLocation = EventValidationService.ValidateLocation();
+
+        if (!string.IsNullOrEmpty(ValidatedLocation))
+            ErrorMessage = ValidatedLocation;
+
+        var ValidatedEventLink = EventValidationService.ValidateEventLink();
+
+        if (!string.IsNullOrEmpty(ValidatedEventLink))
+            ErrorMessage = ValidatedEventLink;
+
+        if (string.IsNullOrEmpty(ErrorMessage))
+        {
+            // Save Meetup
+        }
+
+    }
+}
