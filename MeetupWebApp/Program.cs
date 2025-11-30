@@ -1,5 +1,7 @@
 using MeetupWebApp.Components;
+using MeetupWebApp.Data;
 using MeetupWebApp.Features.Events.CreateEvent;
+using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +9,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddDbContextFactory<ApplicationDbContext>(op =>
+{
+    op.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 
 builder.Services.AddTransient<EventValidationService>();
 
@@ -23,7 +30,6 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
-
 app.UseAntiforgery();
 
 app.MapStaticAssets();
