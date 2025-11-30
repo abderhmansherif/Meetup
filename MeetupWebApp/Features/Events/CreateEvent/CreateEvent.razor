@@ -1,6 +1,7 @@
 ﻿@page "/event/create"
 @rendermode InteractiveServer
-@inject EventValidationService EventValidationService
+@inject NavigationManager NavigationManager
+@inject CreateEventService CreateEventService
 
 <PageTitle>New Meetup</PageTitle>
 @if(!string.IsNullOrEmpty(ErrorMessage))
@@ -71,21 +72,21 @@
     private EventViewModel _eventViewModel = new();
     public string ErrorMessage = string.Empty;
 
-    private void CreateMeetup()
+    private async Task CreateMeetup()
     {
-        EventValidationService.SetModel(_eventViewModel);
+        CreateEventService.SetModel(_eventViewModel);
 
-        var ValidatedDates = EventValidationService.ValidateDates();
+        var ValidatedDates = CreateEventService.ValidateDates();
 
         if (!string.IsNullOrEmpty(ValidatedDates))
             ErrorMessage = ValidatedDates;
 
-        var ValidatedLocation = EventValidationService.ValidateLocation();
+        var ValidatedLocation = CreateEventService.ValidateLocation();
 
         if (!string.IsNullOrEmpty(ValidatedLocation))
             ErrorMessage = ValidatedLocation;
 
-        var ValidatedEventLink = EventValidationService.ValidateEventLink();
+        var ValidatedEventLink = CreateEventService.ValidateEventLink();
 
         if (!string.IsNullOrEmpty(ValidatedEventLink))
             ErrorMessage = ValidatedEventLink;
@@ -93,6 +94,9 @@
         if (string.IsNullOrEmpty(ErrorMessage))
         {
             // Save Meetup
+            await CreateEventService.CraeteEventAsync(_eventViewModel);
+
+            NavigationManager.NavigateTo("/");
         }
 
     }

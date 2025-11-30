@@ -1,10 +1,21 @@
 ﻿using MeetupBlazorWebApp.Features.Events.CreateEvent;
+using MeetupWebApp.Data;
+using MeetupWebApp.Data.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace MeetupWebApp.Features.Events.CreateEvent
 {
-    public class EventValidationService
+    public class CreateEventService
     {
+        private readonly IDbContextFactory<ApplicationDbContext> _factory;
+
         private EventViewModel? _eventViewModel;
+
+        public CreateEventService(IDbContextFactory<ApplicationDbContext> factory)
+        {
+            _factory = factory;
+        }
 
         public void SetModel(EventViewModel model) 
                     => _eventViewModel = model ?? throw new ArgumentNullException(nameof(model));
@@ -13,6 +24,30 @@ namespace MeetupWebApp.Features.Events.CreateEvent
                             => _eventViewModel.BeginDate.ToDateTime(_eventViewModel.BeginTime);
         public DateTime GetEndDateTime() 
                             => _eventViewModel.EndDate.ToDateTime(_eventViewModel.EndTime);
+
+        public async Task CraeteEventAsync(EventViewModel eventViewModel)
+        {
+            if (eventViewModel is null)
+                throw new ArgumentNullException(nameof(eventViewModel));
+
+            using (var context = await _factory.CreateDbContextAsync())
+            {
+                context.Events?.Add(new Event()
+                {
+                    Title = eventViewModel.Title,
+                    Description = eventViewModel.Description ?? string.Empty,
+                    BeginDate = eventViewModel.BeginDate,
+                    EndDate = eventViewModel.EndDate,
+                    BeginTime = eventViewModel.BeginTime,
+                    EndTime = eventViewModel.EndTime,
+                    Capacity = eventViewModel.Capacity,
+                    Category = eventViewModel.Category,
+                    Location = eventViewModel.Location,
+                    EventLink = eventViewModel.EventLink,
+                });
+                await context.SaveChangesAsync();
+            }
+        }
         public string ValidateDates()
         {
             if (_eventViewModel is null)

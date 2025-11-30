@@ -15,7 +15,7 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(op =>
     op.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddTransient<EventValidationService>();
+builder.Services.AddTransient<CreateEventService>();
 
 builder.Services.AddMudServices();
 

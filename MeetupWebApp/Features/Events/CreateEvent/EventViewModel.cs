@@ -4,7 +4,6 @@ namespace MeetupBlazorWebApp.Features.Events.CreateEvent
 {
     public class EventViewModel
     {
-        [Key]
         public int Id { get; set; }
 
         [Required(ErrorMessage ="Title is Required")]
@@ -30,15 +29,13 @@ namespace MeetupBlazorWebApp.Features.Events.CreateEvent
         public string? Location { get; set; }
         public string? EventLink {  get; set; }
 
-        public DateTime GetBeginDateTime() => BeginDate.ToDateTime(BeginTime);
-        public DateTime GetEndDateTime() => EndDate.ToDateTime(EndTime);
-
         public EventViewModel()
         {
             BeginDate = DateOnly.FromDateTime(DateTime.Now);
             EndDate = DateOnly.FromDateTime(DateTime.Now);
             BeginTime = TimeOnly.FromDateTime(DateTime.Now);
             EndTime = TimeOnly.FromDateTime(DateTime.Now);
+            Category = EventCategoriesEnum.InPerson.ToString();
         }
 
     }
