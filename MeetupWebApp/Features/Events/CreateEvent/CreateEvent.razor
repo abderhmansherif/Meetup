@@ -1,9 +1,11 @@
 ﻿@page "/event/create"
+@using MeetupWebApp.Features.Events.Shared
 
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject SharedHelper SharedHelper
 @inject CreateEventService CreateEventService
+@inject EventValidationService EventValidationService
 
 <PageTitle>New Meetup</PageTitle>
 
@@ -38,37 +40,13 @@
 
     private async Task CreateMeetup()
     {
-        CreateEventService.SetModel(_eventViewModel);
+        ErrorMessage = EventValidationService.ValidateEvent(_eventViewModel);
 
-        var ValidatedDates = CreateEventService.ValidateDates();
-
-        if (!string.IsNullOrEmpty(ValidatedDates))
+        if (!string.IsNullOrEmpty(ErrorMessage))
         {
-            ErrorMessage = ValidatedDates;
-
             return;
         }
 
-        var ValidatedLocation = CreateEventService.ValidateLocation();
-
-        if (!string.IsNullOrEmpty(ValidatedLocation))
-        {
-            ErrorMessage = ValidatedLocation;
-       
-            return;
-        }
-
-        var ValidatedEventLink = CreateEventService.ValidateEventLink();
-
-        if (!string.IsNullOrEmpty(ValidatedEventLink))
-        {
-            ErrorMessage = ValidatedEventLink;
-           
-            return;
-        }
-
-        
-        ErrorMessage = string.Empty;
 
         if (string.IsNullOrEmpty(ErrorMessage))
         {

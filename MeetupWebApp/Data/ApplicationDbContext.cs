@@ -8,7 +8,7 @@ namespace MeetupWebApp.Data
         public ApplicationDbContext(DbContextOptions options) :base(options)
         { }
 
-        public DbSet<Event>? Events { get; set; }
+        public DbSet<Event> Events { get; set; }
 
     }
 }

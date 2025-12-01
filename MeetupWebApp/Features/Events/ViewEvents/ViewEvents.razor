@@ -1,5 +1,5 @@
 ﻿@page "/"
-@using MeetupWebApp.Shared.ViewModels
+@using MeetupWebApp.Features.Events.Shared
 @inject ViewEventService ViewEventService
 
 <PageTitle>Explore Meetups</PageTitle>
@@ -28,13 +28,16 @@
                     @foreach (var Event in Events)
                     {
                         <tr>
-                            <td class="text-center">
-                                <img src="@Event.ImageUrl"
-                                     class="img-fluid rounded"
-                                     style="width:150px; height:90px; object-fit:cover; border: 1px solid #ddd;" />
+                           
+                                <td class="text-center">
+                                    <a href="@($"/events/{Event.Id}/edit")">
+                                        <img src="@Event.ImageUrl"
+                                             class="img-fluid rounded"
+                                             style="width:150px; height:90px; object-fit:cover; border: 1px solid #ddd;" />
 
-                                <div class="mt-2 fw-semibold">@Event.Title</div>
-                            </td>
+                                        <div class="mt-2 fw-semibold">@Event.Title</div>
+                                    </a>
+                                </td>
 
                             <td>@Event.Category</td>
 

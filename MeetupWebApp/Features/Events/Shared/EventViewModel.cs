@@ -1,8 +1,7 @@
-﻿using MeetupBlazorWebApp.Features.Events.CreateEvent;
-using Microsoft.AspNetCore.Components.Forms;
+﻿using Microsoft.AspNetCore.Components.Forms;
 using System.ComponentModel.DataAnnotations;
 
-namespace MeetupWebApp.Shared.ViewModels
+namespace MeetupWebApp.Features.Events.Shared
 {
     public class EventViewModel
     {
@@ -30,10 +29,7 @@ namespace MeetupWebApp.Shared.ViewModels
         public int Capacity {  get; set; }
         public string? Location { get; set; }
         public string? EventLink {  get; set; }
-
-        [Required(ErrorMessage = "please upload an image for the meetup.")]
         public IBrowserFile ImageFile { get; set; }
-
         public string? ImageUrl { get; set; }
 
         public EventViewModel()
@@ -42,7 +38,6 @@ namespace MeetupWebApp.Shared.ViewModels
             EndDate = DateOnly.FromDateTime(DateTime.Now);
             BeginTime = TimeOnly.FromDateTime(DateTime.Now);
             EndTime = TimeOnly.FromDateTime(DateTime.Now);
-            Category = EventCategoriesEnum.InPerson.ToString();
             ImageUrl = "/image-placeholder.jpg";
         }
 

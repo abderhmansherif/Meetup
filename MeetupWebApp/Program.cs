@@ -1,5 +1,7 @@
 using MeetupWebApp.Data;
 using MeetupWebApp.Features.Events.CreateEvent;
+using MeetupWebApp.Features.Events.EditEvents;
+using MeetupWebApp.Features.Events.Shared;
 using MeetupWebApp.Features.Events.ViewEvents;
 using MeetupWebApp.Shared;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +26,10 @@ builder.Services.AddTransient<CreateEventService>();
 builder.Services.AddTransient<ViewEventService>();
 
 builder.Services.AddTransient<SharedHelper>();
+
+builder.Services.AddTransient<EditEventsService>();
+
+builder.Services.AddTransient<EventValidationService>();
 
 builder.Services.AddMudServices();
 

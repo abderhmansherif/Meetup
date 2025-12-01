@@ -1,0 +1,66 @@
+﻿@page "/events/{EventId:int}/edit"
+
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject EditEventsService EditEventsService
+@inject EventValidationService EventValidationService
+
+<PageTitle>Update Meetup</PageTitle>
+
+@if(EventViewModel is not null)
+{
+    <AddOrEditEventComponent
+                         OnSave="UpdateEvent"
+                         EventViewModel="EventViewModel"
+                         OnError="HandleError">
+
+        <ErrorMessageFragment>
+            <ErrorMessageComponent ErrorMessage="@ErrorMessage"></ErrorMessageComponent>
+        </ErrorMessageFragment>
+ 
+    </AddOrEditEventComponent>
+}
+else
+{
+    <ErrorMessageComponent ErrorMessage="Event does not exist"></ErrorMessageComponent>
+
+}
+
+@code {
+    [Parameter]
+    public int EventId { get; set; }
+
+    public EventViewModel EventViewModel { get; set; } = new();
+
+    [Parameter]
+    public string ErrorMessage { get; set; } = string.Empty;
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        EventViewModel = await EditEventsService.GetEventByIdAsync(EventId);
+    }
+
+    public async Task UpdateEvent()
+    {
+        ErrorMessage = EventValidationService.ValidateEvent(EventViewModel);
+        if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            return;
+        }
+
+        // Updating Event
+        await EditEventsService.UpdateEventAsync(EventViewModel);
+
+        NavigationManager.NavigateTo("/");
+    }
+
+    public async Task HandleError(string msg)
+    {
+        ErrorMessage = msg;
+
+        await Task.Delay(7000);
+        ErrorMessage = string.Empty;
+    }
+
+}

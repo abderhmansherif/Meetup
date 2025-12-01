@@ -1,4 +1,4 @@
-﻿using MeetupBlazorWebApp.Features.Events.CreateEvent;
+﻿using MeetupWebApp.Features.Events.Shared;
 
 namespace MeetupWebApp.Shared
 {
@@ -9,13 +9,5 @@ namespace MeetupWebApp.Shared
             return Enum.GetNames(typeof(EventCategoriesEnum)).ToList();
         }
 
-        public async Task<bool> ShowMessageError(string msg)
-        {
-            if(!string.IsNullOrEmpty(msg))
-            {
-
-            }
-            return false
-        }
     }
 }

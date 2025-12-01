@@ -71,16 +71,20 @@
                     <ValidationMessage For="() => EventViewModel.Category" />
                 </div>
 
-                @if (EventViewModel.Category == EventCategoriesEnum.InPerson.ToString())
+                @if (EventViewModel.Category.Equals(EventCategoriesEnum.InPerson.ToString()))
                 {
+                    EventViewModel.EventLink = string.Empty;
+
                     <div class="mb-3">
                         <label for="location" class="form-label">Location</label>
                         <InputText @bind-value="EventViewModel.Location" id="location" class="form-control" />
                         <ValidationMessage For="() => EventViewModel.Location" />
                     </div>
                 }
-                else if (EventViewModel.Category == EventCategoriesEnum.Online.ToString())
+                else if (EventViewModel.Category.Equals(EventCategoriesEnum.Online.ToString()))
                 {
+                    EventViewModel.Location = string.Empty;
+
                     <div class="mb-3">
                         <label for="MeetupLink" class="form-label">Meetup Link</label>
                         <InputText @bind-value="EventViewModel.EventLink" id="MeetupLink" class="form-control" />
@@ -108,7 +112,19 @@
                 }
 
                 <div class="d-flex justify-content-between mt-4">
-                    <button type="submit" class="btn btn-primary">Create Meetup</button>
+                    @{
+                        if (EventViewModel.Id > 0)
+                        {
+                            <button type="submit" class="btn btn-primary">Update Meetup</button>
+
+                        }
+                        else if (EventViewModel.Id <= 0)
+                        {
+                            <button type="submit" class="btn btn-primary">Create Meetup</button>
+
+                        }
+                    }
+
                     <a class="btn btn-secondary" href="/">Cancel</a>
                 </div>
             </EditForm>
@@ -155,6 +171,7 @@
         }
 
         EventViewModel.ImageFile = e.File;
+        StateHasChanged();
 
        try
         { 

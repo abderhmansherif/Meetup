@@ -1,4 +1,4 @@
-﻿namespace MeetupBlazorWebApp.Features.Events.CreateEvent
+﻿namespace MeetupWebApp.Features.Events.Shared
 {
     public enum EventCategoriesEnum
     {
