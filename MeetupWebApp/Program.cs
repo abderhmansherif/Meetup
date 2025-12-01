@@ -1,7 +1,9 @@
-using MeetupWebApp.Components;
 using MeetupWebApp.Data;
 using MeetupWebApp.Features.Events.CreateEvent;
+using MeetupWebApp.Features.Events.ViewEvents;
+using MeetupWebApp.Shared;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +17,11 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(op =>
     op.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
 builder.Services.AddTransient<CreateEventService>();
+
+builder.Services.AddTransient<ViewEventService>();
 
 builder.Services.AddMudServices();
 

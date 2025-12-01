@@ -1,8 +1,36 @@
 ﻿@page "/"
+@inject ViewEventService ViewEventService
+
 <PageTitle>Explore Meetups</PageTitle>
 
 @*View all events in table*@
 
+@if(Events is not null && Events.Count > 0)
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <td>Title</td>
+                <td>Category</td>
+                <td>Begin Time</td>
+                <td>End Time</td>
+                <td>Capacity</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var Event in Events)
+            {
+                <tr>
+                    <td>@Event.Title</td>
+                    <td>@Event.Category</td>
+                    <td>@Event.BeginDate @Event.BeginTime</td>
+                    <td>@Event.EndDate @Event.EndTime</td>
+                    <td>@(Event.Capacity == 0 ? "Unlimited" : Event.Capacity.ToString())</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 
 
@@ -11,4 +39,14 @@
 
 @code {
 
+    [PersistentState(AllowUpdates = true, RestoreBehavior = RestoreBehavior.SkipLastSnapshot)]
+    public List<EventViewModel>? Events { get; set; } 
+
+    protected override async Task OnInitializedAsync()
+    {
+        if(Events is null)
+        {
+            Events = await ViewEventService.GetEventsAsync();
+        }
+    }
 }

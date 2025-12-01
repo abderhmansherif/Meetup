@@ -1,4 +1,5 @@
-﻿using MeetupBlazorWebApp.Features.Events.CreateEvent;
+﻿using AutoMapper;
+using MeetupBlazorWebApp.Features.Events.CreateEvent;
 using MeetupWebApp.Data;
 using MeetupWebApp.Data.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -9,12 +10,13 @@ namespace MeetupWebApp.Features.Events.CreateEvent
     public class CreateEventService
     {
         private readonly IDbContextFactory<ApplicationDbContext> _factory;
-
+        private readonly IMapper _mapper;
         private EventViewModel? _eventViewModel;
 
-        public CreateEventService(IDbContextFactory<ApplicationDbContext> factory)
+        public CreateEventService(IDbContextFactory<ApplicationDbContext> factory, IMapper mapper)
         {
             _factory = factory;
+            _mapper = mapper;
         }
 
         public void SetModel(EventViewModel model) 
@@ -32,19 +34,10 @@ namespace MeetupWebApp.Features.Events.CreateEvent
 
             using (var context = await _factory.CreateDbContextAsync())
             {
-                context.Events?.Add(new Event()
-                {
-                    Title = eventViewModel.Title,
-                    Description = eventViewModel.Description ?? string.Empty,
-                    BeginDate = eventViewModel.BeginDate,
-                    EndDate = eventViewModel.EndDate,
-                    BeginTime = eventViewModel.BeginTime,
-                    EndTime = eventViewModel.EndTime,
-                    Capacity = eventViewModel.Capacity,
-                    Category = eventViewModel.Category,
-                    Location = eventViewModel.Location,
-                    EventLink = eventViewModel.EventLink,
-                });
+                var Event = _mapper.Map<Event>(eventViewModel);
+
+                context.Events?.Add(Event);
+
                 await context.SaveChangesAsync();
             }
         }
