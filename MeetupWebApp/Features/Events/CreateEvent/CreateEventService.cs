@@ -96,5 +96,10 @@ namespace MeetupWebApp.Features.Events.CreateEvent
 
             return string.Empty;
         }
+
+        public List<string> GetCategories()
+        {
+            return Enum.GetNames(typeof(EventCategoriesEnum)).ToList();
+        }
     }
 }

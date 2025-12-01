@@ -6,48 +6,64 @@
 
 @*View all events in table*@
 
-@if(Events is not null && Events.Count > 0)
+@if (Events is not null && Events.Count > 0)
 {
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <td>Title</td>
-                <td>Category</td>
-                <td>Begin Time</td>
-                <td>End Time</td>
-                <td>Capacity</td>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach(var Event in Events)
-            {
-                <tr>
-                    <td style="text-align:center">
-                        @{
-                            var imageurl = Event.ImageUrl;
-                            <img src="@imageurl"
-                                 width="130"
-                                 height="80"
-                                 style="object-fit: cover;"
-                                 class="img-thumbnail" />
-                        }
-                        <br />
-                        @Event.Title
-                    </td>
+    <div class="card shadow-sm my-4">
+        <div class="card-body">
 
+            <h4 class="mb-3">Meetups</h4>
 
-                    <td>@Event.Category</td>
-                    <td>@Event.BeginDate @Event.BeginTime</td>
-                    <td>@Event.EndDate @Event.EndTime</td>
-                    <td>@(Event.Capacity == 0 ? "Unlimited" : Event.Capacity.ToString())</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Event</th>
+                        <th>Category</th>
+                        <th>Begin</th>
+                        <th>End</th>
+                        <th>Capacity</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var Event in Events)
+                    {
+                        <tr>
+                            <td class="text-center">
+                                <img src="@Event.ImageUrl"
+                                     class="img-fluid rounded"
+                                     style="width:150px; height:90px; object-fit:cover; border: 1px solid #ddd;" />
+
+                                <div class="mt-2 fw-semibold">@Event.Title</div>
+                            </td>
+
+                            <td>@Event.Category</td>
+
+                            <td>
+                                <div>@Event.BeginDate.ToShortDateString()</div>
+                                <small class="text-muted">@Event.BeginTime</small>
+                            </td>
+
+                            <td>
+                                <div>@Event.EndDate.ToShortDateString()</div>
+                                <small class="text-muted">@Event.EndTime</small>
+                            </td>
+
+                            <td>
+                                @(Event.Capacity == 0
+                                                        ? "Unlimited"
+                                                        : Event.Capacity.ToString())
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
 }
 else
 {
-    <p><em>Loading....</em></p>
+    <p><em>Loading...</em></p>
 }
 
 

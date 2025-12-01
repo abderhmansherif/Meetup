@@ -1,97 +1,133 @@
 ﻿@page "/event/create"
-@using MeetupWebApp.Features.Events
-@using MeetupWebApp.Shared.ViewModels
-@using SixLabors.ImageSharp
-@using SixLabors.ImageSharp.Formats.Png
-@using SixLabors.ImageSharp.Processing
+
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject CreateEventService CreateEventService
 
 <PageTitle>New Meetup</PageTitle>
-@if(!string.IsNullOrEmpty(ErrorMessage))
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
 {
     <div class="alert alert-danger" role="alert">
-       @ErrorMessage
+        @ErrorMessage
     </div>
 }
 
+<div class="card shadow-sm my-4">
+    <div class="card-body">
+        <h3 class="card-title mb-4">Create Event</h3>
 
-<h3>Create Event</h3>
+        <EditForm Model="_eventViewModel" FormName="CreateNewMeetup" OnValidSubmit="CreateMeetup">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
 
-<EditForm Model="_eventViewModel" FormName="CreateNewMeetup"  OnValidSubmit="CreateMeetup">
-    <ValidationSummary></ValidationSummary>
-    <DataAnnotationsValidator></DataAnnotationsValidator>
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <InputText @bind-Value="_eventViewModel.Title" id="title" class="form-control" />
+                <ValidationMessage For="@(() => _eventViewModel.Title)" />
+            </div>
 
-   <div class="form-group">
-       <label for="title">Title</label>
-       <InputText @bind-Value="_eventViewModel.Title" id="title" class="form-control" />
-        <ValidationMessage For="@(() => _eventViewModel.Title)"></ValidationMessage>
-   </div>
-    <div class="form-group">
-        <label for="Desc">Descreption</label>
-        <InputText @bind-Value="_eventViewModel.Description" id="Desc" class="form-control" />
-        <ValidationMessage For="@(() => _eventViewModel.Description)"></ValidationMessage>
+            <div class="mb-3">
+                <label for="Desc" class="form-label">Description</label>
+                <InputText @bind-Value="_eventViewModel.Description" id="Desc" class="form-control" />
+                <ValidationMessage For="@(() => _eventViewModel.Description)" />
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="begindate" class="form-label">Begin Date</label>
+                    <InputDate @bind-Value="_eventViewModel.BeginDate" id="begindate" class="form-control" />
+                    <ValidationMessage For="() => _eventViewModel.BeginDate" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="begintime" class="form-label">Begin Time</label>
+                    <input type="time" @bind-value="_eventViewModel.BeginTime" id="begintime" class="form-control" />
+                    <ValidationMessage For="() => _eventViewModel.BeginTime" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="Enddate" class="form-label">End Date</label>
+                    <InputDate @bind-Value="_eventViewModel.EndDate" id="Enddate" class="form-control" />
+                    <ValidationMessage For="() => _eventViewModel.EndDate" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="Endtime" class="form-label">End Time</label>
+                    <input type="time" @bind-value="_eventViewModel.EndTime" id="Endtime" class="form-control" />
+                    <ValidationMessage For="() => _eventViewModel.EndTime" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="Capacity" class="form-label">Capacity</label>
+                <InputNumber @bind-value="_eventViewModel.Capacity" id="Capacity" class="form-control" />
+                <ValidationMessage For="() => _eventViewModel.Capacity" />
+            </div>
+
+            <div class="mb-3">
+                <label for="Category" class="form-label">Category</label>
+                <InputSelect @bind-Value="_eventViewModel.Category" class="form-select">
+                    <option value="" selected>Select a Category</option>
+                    @foreach (var Category in CreateEventService.GetCategories())
+                    {
+                        <option value="@Category">@Category</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => _eventViewModel.Category" />
+            </div>
+
+            @if (_eventViewModel.Category == EventCategoriesEnum.InPerson.ToString())
+            {
+                <div class="mb-3">
+                    <label for="location" class="form-label">Location</label>
+                    <InputText @bind-value="_eventViewModel.Location" id="location" class="form-control" />
+                    <ValidationMessage For="() => _eventViewModel.Location" />
+                </div>
+            }
+            else if (_eventViewModel.Category == EventCategoriesEnum.Online.ToString())
+            {
+                <div class="mb-3">
+                    <label for="MeetupLink" class="form-label">Meetup Link</label>
+                    <InputText @bind-value="_eventViewModel.EventLink" id="MeetupLink" class="form-control" />
+                    <ValidationMessage For="() => _eventViewModel.EventLink" />
+                </div>
+            }
+
+            <div class="mb-3">
+                <label for="coverimage" class="form-label">Cover Image</label>
+                <InputFile id="coverimage" class="form-control" accept=".png,.jpg,.jpeg,.webp" OnChange="HandleImageUpload" />
+                <ValidationMessage For="() => _eventViewModel.ImageFile" />
+            </div>
+
+            @if (_eventViewModel.ImageUrl is not null)
+            {
+                <div class="mb-3 text-center">
+                    <img src="@_eventViewModel.ImageUrl" class="img-thumbnail" style="max-width: 200px; object-fit: cover;" />
+                </div>
+            }
+
+            <br />
+            @if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <div class="alert alert-danger" role="alert">
+                    @ErrorMessage
+                </div>
+            }
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-primary">Create Meetup</button>
+                <a class="btn btn-secondary" href="/">Cancel</a>
+            </div>
+        </EditForm>
     </div>
-    <div class="form-group">
-        <label for="begindate">Begin Date</label>
-        <InputDate @bind-Value="_eventViewModel.BeginDate" id="begindate" class="form-control" />
-        <ValidationMessage For="() => _eventViewModel.BeginDate"></ValidationMessage>
-    </div>
-
-    <div class="form-group">
-        <label for="begintime">Begin Time</label>
-        <input type="time"  @bind-value="_eventViewModel.BeginTime" id="begintime" class="form-control" />
-        <ValidationMessage For="() => _eventViewModel.BeginTime"></ValidationMessage>
-    </div>
-
-    <div class="form-group">
-        <label for="Enddate">End Date</label>
-        <InputDate @bind-Value="_eventViewModel.EndDate" id="Enddate" class="form-control" />
-        <ValidationMessage For="() => _eventViewModel.EndDate"></ValidationMessage>
-    </div>
-
-    <div class="form-group">
-        <label for="Endtime">End Time</label>
-        <input type="time" @bind-value="_eventViewModel.EndTime" id="Endtime" class="form-control" />
-        <ValidationMessage For="() => _eventViewModel.EndTime"></ValidationMessage>
-    </div>
-
-    <div class="form-group">
-        <label for="locatio ">Location</label>
-        <InputText @bind-value="_eventViewModel.Location" id="location" class="form-control" />
-        <ValidationMessage For="() => _eventViewModel.Location"></ValidationMessage>
-    </div>
-    <br />
-
-    <div class="form-group">
-        <label for="coverimage">Cover Image</label>
-        <InputFile id="coverimage" class="form-control" accept=".png, .jpg, .jpeg, .webp" OnChange="HandleImageUpload" />
-        <ValidationMessage For="() => _eventViewModel.ImageFile"></ValidationMessage>
-    </div>
-    <br />
-     
-    @if(_eventViewModel.ImageUrl is not null)
-    {
-        <img src="@_eventViewModel.ImageUrl"
-             width="200"
-             style="object-fit: cover;"
-             class="img-thumbnail" />        
-    }
-
-    <br />
-    <br />
-
-    <button type="submit" class="btn btn-primary">Create Meetup</button>
-    <a class="btn btn-secondary" href="/">Cencel</a>
-
-</EditForm>
-
+</div>
 
 
 @code {
 
     private EventViewModel _eventViewModel = new();
+
     public string ErrorMessage = string.Empty;
 
     private async Task CreateMeetup()
