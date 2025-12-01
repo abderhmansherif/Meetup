@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MeetupBlazorWebApp.Features.Events.CreateEvent;
+using System.ComponentModel.DataAnnotations;
 
-namespace MeetupBlazorWebApp.Features.Events.CreateEvent
+namespace MeetupWebApp.Features.Events
 {
     public class EventViewModel
     {
