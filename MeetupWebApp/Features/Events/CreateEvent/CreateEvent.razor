@@ -2,133 +2,39 @@
 
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
+@inject SharedHelper SharedHelper
 @inject CreateEventService CreateEventService
 
 <PageTitle>New Meetup</PageTitle>
 
-@if (!string.IsNullOrEmpty(ErrorMessage))
-{
-    <div class="alert alert-danger" role="alert">
-        @ErrorMessage
-    </div>
-}
 
-<div class="card shadow-sm my-4">
-    <div class="card-body">
-        <h3 class="card-title mb-4">Create Event</h3>
 
-        <EditForm Model="_eventViewModel" FormName="CreateNewMeetup" OnValidSubmit="CreateMeetup">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
+<AddOrEditEventComponent EventViewModel="_eventViewModel"
+                         OnSave="CreateMeetup"
+                         OnError="HandleError"
+>
+                         
+    <ErrorMessageFragment>
+        <ErrorMessageComponent ErrorMessage="@ErrorMessage"></ErrorMessageComponent>
+    </ErrorMessageFragment>
 
-            <div class="mb-3">
-                <label for="title" class="form-label">Title</label>
-                <InputText @bind-Value="_eventViewModel.Title" id="title" class="form-control" />
-                <ValidationMessage For="@(() => _eventViewModel.Title)" />
-            </div>
-
-            <div class="mb-3">
-                <label for="Desc" class="form-label">Description</label>
-                <InputText @bind-Value="_eventViewModel.Description" id="Desc" class="form-control" />
-                <ValidationMessage For="@(() => _eventViewModel.Description)" />
-            </div>
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="begindate" class="form-label">Begin Date</label>
-                    <InputDate @bind-Value="_eventViewModel.BeginDate" id="begindate" class="form-control" />
-                    <ValidationMessage For="() => _eventViewModel.BeginDate" />
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="begintime" class="form-label">Begin Time</label>
-                    <input type="time" @bind-value="_eventViewModel.BeginTime" id="begintime" class="form-control" />
-                    <ValidationMessage For="() => _eventViewModel.BeginTime" />
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="Enddate" class="form-label">End Date</label>
-                    <InputDate @bind-Value="_eventViewModel.EndDate" id="Enddate" class="form-control" />
-                    <ValidationMessage For="() => _eventViewModel.EndDate" />
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="Endtime" class="form-label">End Time</label>
-                    <input type="time" @bind-value="_eventViewModel.EndTime" id="Endtime" class="form-control" />
-                    <ValidationMessage For="() => _eventViewModel.EndTime" />
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <label for="Capacity" class="form-label">Capacity</label>
-                <InputNumber @bind-value="_eventViewModel.Capacity" id="Capacity" class="form-control" />
-                <ValidationMessage For="() => _eventViewModel.Capacity" />
-            </div>
-
-            <div class="mb-3">
-                <label for="Category" class="form-label">Category</label>
-                <InputSelect @bind-Value="_eventViewModel.Category" class="form-select">
-                    <option value="" selected>Select a Category</option>
-                    @foreach (var Category in CreateEventService.GetCategories())
-                    {
-                        <option value="@Category">@Category</option>
-                    }
-                </InputSelect>
-                <ValidationMessage For="() => _eventViewModel.Category" />
-            </div>
-
-            @if (_eventViewModel.Category == EventCategoriesEnum.InPerson.ToString())
-            {
-                <div class="mb-3">
-                    <label for="location" class="form-label">Location</label>
-                    <InputText @bind-value="_eventViewModel.Location" id="location" class="form-control" />
-                    <ValidationMessage For="() => _eventViewModel.Location" />
-                </div>
-            }
-            else if (_eventViewModel.Category == EventCategoriesEnum.Online.ToString())
-            {
-                <div class="mb-3">
-                    <label for="MeetupLink" class="form-label">Meetup Link</label>
-                    <InputText @bind-value="_eventViewModel.EventLink" id="MeetupLink" class="form-control" />
-                    <ValidationMessage For="() => _eventViewModel.EventLink" />
-                </div>
-            }
-
-            <div class="mb-3">
-                <label for="coverimage" class="form-label">Cover Image</label>
-                <InputFile id="coverimage" class="form-control" accept=".png,.jpg,.jpeg,.webp" OnChange="HandleImageUpload" />
-                <ValidationMessage For="() => _eventViewModel.ImageFile" />
-            </div>
-
-            @if (_eventViewModel.ImageUrl is not null)
-            {
-                <div class="mb-3 text-center">
-                    <img src="@_eventViewModel.ImageUrl" class="img-thumbnail" style="max-width: 200px; object-fit: cover;" />
-                </div>
-            }
-
-            <br />
-            @if (!string.IsNullOrEmpty(ErrorMessage))
-            {
-                <div class="alert alert-danger" role="alert">
-                    @ErrorMessage
-                </div>
-            }
-
-            <div class="d-flex justify-content-between mt-4">
-                <button type="submit" class="btn btn-primary">Create Meetup</button>
-                <a class="btn btn-secondary" href="/">Cancel</a>
-            </div>
-        </EditForm>
-    </div>
-</div>
+</AddOrEditEventComponent>
 
 
 @code {
 
     private EventViewModel _eventViewModel = new();
 
-    public string ErrorMessage = string.Empty;
+    public string ErrorMessage { get; set; } = string.Empty;
+
+    public async Task HandleError (string msg)
+    {
+        ErrorMessage = msg;
+
+        // message disappears after 7 seconds
+        await Task.Delay(7000);
+        ErrorMessage = string.Empty;
+    }
 
     private async Task CreateMeetup()
     {
@@ -137,17 +43,32 @@
         var ValidatedDates = CreateEventService.ValidateDates();
 
         if (!string.IsNullOrEmpty(ValidatedDates))
+        {
             ErrorMessage = ValidatedDates;
+
+            return;
+        }
 
         var ValidatedLocation = CreateEventService.ValidateLocation();
 
         if (!string.IsNullOrEmpty(ValidatedLocation))
+        {
             ErrorMessage = ValidatedLocation;
+       
+            return;
+        }
 
         var ValidatedEventLink = CreateEventService.ValidateEventLink();
 
         if (!string.IsNullOrEmpty(ValidatedEventLink))
+        {
             ErrorMessage = ValidatedEventLink;
+           
+            return;
+        }
+
+        
+        ErrorMessage = string.Empty;
 
         if (string.IsNullOrEmpty(ErrorMessage))
         {
@@ -157,46 +78,5 @@
             NavigationManager.NavigateTo("/");
         }
 
-    }
-
-    public async Task HandleImageUpload(InputFileChangeEventArgs e)
-    {
-        if (e is null)
-        {
-            ErrorMessage = "No Image Uploaded";
-            return;
-        }
-
-        if (e.File.Size > 5 * 1024 * 1024)
-        {
-            ErrorMessage = "Image too big";
-            return;
-        }
-
-        _eventViewModel.ImageFile = e.File;
-
-        try
-        {
-            //define a file name and file path
-            string FileName = Guid.NewGuid().ToString() + Path.GetExtension(e.File.Name);
-            string FilePath = Path.Combine("wwwroot", "images", "events", $"{FileName}");
-
-            //Resize the image and Save it
-            using var filestream = _eventViewModel.ImageFile.OpenReadStream();
-            using var image = await Image.LoadAsync(filestream);
-
-            image.Mutate(x => x.Resize(300, 169));
-
-            var filepathstream = new FileStream(FilePath, FileMode.Create);
-            await image.SaveAsync(filepathstream, new PngEncoder());
-
-            // Set the Image Url
-            _eventViewModel.ImageUrl = $"/images/events/{FileName}";
-
-            ErrorMessage = string.Empty;
-        } catch(Exception ex)
-        {
-            ErrorMessage = "Server Error, please try again and upload another cover image.";
-        }
     }
 }

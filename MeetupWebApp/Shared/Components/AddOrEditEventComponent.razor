@@ -1,0 +1,183 @@
+﻿@inject SharedHelper SharedHelper
+
+@if (ErrorMessageFragment is not null)
+{
+    @ErrorMessageFragment
+}
+
+@if(EventViewModel is not null)
+{
+    <div class="card shadow-sm my-4">
+        <div class="card-body">
+            <h3 class="card-title mb-4">Create Event</h3>
+
+            <EditForm Model="EventViewModel" FormName="CreateNewMeetup" OnValidSubmit="Save">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    <InputText @bind-Value="EventViewModel.Title" id="title" class="form-control" />
+                    <ValidationMessage For="@(() => EventViewModel.Title)" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="Desc" class="form-label">Description</label>
+                    <InputText @bind-Value="EventViewModel.Description" id="Desc" class="form-control" />
+                    <ValidationMessage For="@(() => EventViewModel.Description)" />
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="begindate" class="form-label">Begin Date</label>
+                        <InputDate @bind-Value="EventViewModel.BeginDate" id="begindate" class="form-control" />
+                        <ValidationMessage For="() => EventViewModel.BeginDate" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="begintime" class="form-label">Begin Time</label>
+                        <input type="time" @bind-value="EventViewModel.BeginTime" id="begintime" class="form-control" />
+                        <ValidationMessage For="() => EventViewModel.BeginTime" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="Enddate" class="form-label">End Date</label>
+                        <InputDate @bind-Value="EventViewModel.EndDate" id="Enddate" class="form-control" />
+                        <ValidationMessage For="() => EventViewModel.EndDate" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="Endtime" class="form-label">End Time</label>
+                        <input type="time" @bind-value="EventViewModel.EndTime" id="Endtime" class="form-control" />
+                        <ValidationMessage For="() => EventViewModel.EndTime" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="Capacity" class="form-label">Capacity</label>
+                    <InputNumber @bind-value="EventViewModel.Capacity" id="Capacity" class="form-control" />
+                    <ValidationMessage For="() => EventViewModel.Capacity" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="Category" class="form-label">Category</label>
+                    <InputSelect @bind-Value="EventViewModel.Category" class="form-select">
+                        <option value="" selected>Select a Category</option>
+                        @foreach (var Category in SharedHelper.GetCategories())
+                        {
+                            <option value="@Category">@Category</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => EventViewModel.Category" />
+                </div>
+
+                @if (EventViewModel.Category == EventCategoriesEnum.InPerson.ToString())
+                {
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location</label>
+                        <InputText @bind-value="EventViewModel.Location" id="location" class="form-control" />
+                        <ValidationMessage For="() => EventViewModel.Location" />
+                    </div>
+                }
+                else if (EventViewModel.Category == EventCategoriesEnum.Online.ToString())
+                {
+                    <div class="mb-3">
+                        <label for="MeetupLink" class="form-label">Meetup Link</label>
+                        <InputText @bind-value="EventViewModel.EventLink" id="MeetupLink" class="form-control" />
+                        <ValidationMessage For="() => EventViewModel.EventLink" />
+                    </div>
+                }
+
+                <div class="mb-3">
+                    <label for="coverimage" class="form-label">Cover Image</label>
+                    <InputFile id="coverimage" class="form-control" accept=".png,.jpg,.jpeg,.webp" OnChange="HandleImageUpload" />
+                    <ValidationMessage For="() => EventViewModel.ImageFile" />
+                </div>
+
+                @if (EventViewModel.ImageUrl is not null)
+                {
+                    <div class="mb-3 text-center">
+                        <img src="@EventViewModel.ImageUrl" class="img-thumbnail" style="max-width: 200px; object-fit: cover;" />
+                    </div>
+                }
+
+                <br />
+                @if (ErrorMessageFragment is not null)
+                {
+                        @ErrorMessageFragment
+                }
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-primary">Create Meetup</button>
+                    <a class="btn btn-secondary" href="/">Cancel</a>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+
+}
+
+@code
+{
+    [Parameter]
+    public EventViewModel EventViewModel { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<EventViewModel> OnSave { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnError { get; set; }
+
+    [Parameter]
+    public RenderFragment ErrorMessageFragment { get; set; } = null!;
+
+
+
+    public async Task Save()
+    {
+        await OnSave.InvokeAsync(EventViewModel);
+    }
+
+
+    public async Task HandleImageUpload(InputFileChangeEventArgs e)
+    {
+        if (e is null)
+        {
+            await OnError.InvokeAsync("No Image Uploaded");
+            return;
+        }
+
+
+        if (e.File.Size > (5 * 1024 * 1024))
+        {
+            await OnError.InvokeAsync("Image too big, Maximum 5 MB");
+            return;
+        }
+
+        EventViewModel.ImageFile = e.File;
+
+       try
+        { 
+            //define a file name and file path
+            string FileName = Guid.NewGuid().ToString() + Path.GetExtension(e.File.Name);
+            string FilePath = Path.Combine("wwwroot", "images", "events", $"{FileName}");
+
+            //Resize the image and Save it
+            using var filestream = EventViewModel.ImageFile.OpenReadStream(5242880);
+            using var image = await Image.LoadAsync(filestream);
+
+            image.Mutate(x => x.Resize(300, 169));
+
+            var filepathstream = new FileStream(FilePath, FileMode.Create);
+            image.SaveAsPng(filepathstream);
+
+            // Set the Image Url
+            EventViewModel.ImageUrl = $"/images/events/{FileName}";
+
+       }
+        catch (Exception ex)
+        {            
+            await OnError.InvokeAsync("Server Error, please try again and upload another cover image. ");
+        }
+    }
+}

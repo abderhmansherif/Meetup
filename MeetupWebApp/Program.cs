@@ -23,6 +23,8 @@ builder.Services.AddTransient<CreateEventService>();
 
 builder.Services.AddTransient<ViewEventService>();
 
+builder.Services.AddTransient<SharedHelper>();
+
 builder.Services.AddMudServices();
 
 var app = builder.Build();
