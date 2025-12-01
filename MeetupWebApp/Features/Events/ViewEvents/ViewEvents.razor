@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using MeetupWebApp.Shared.ViewModels
 @inject ViewEventService ViewEventService
 
 <PageTitle>Explore Meetups</PageTitle>
@@ -21,7 +22,20 @@
             @foreach(var Event in Events)
             {
                 <tr>
-                    <td>@Event.Title</td>
+                    <td style="text-align:center">
+                        @{
+                            var imageurl = Event.ImageUrl;
+                            <img src="@imageurl"
+                                 width="130"
+                                 height="80"
+                                 style="object-fit: cover;"
+                                 class="img-thumbnail" />
+                        }
+                        <br />
+                        @Event.Title
+                    </td>
+
+
                     <td>@Event.Category</td>
                     <td>@Event.BeginDate @Event.BeginTime</td>
                     <td>@Event.EndDate @Event.EndTime</td>
@@ -31,9 +45,13 @@
         </tbody>
     </table>
 }
+else
+{
+    <p><em>Loading....</em></p>
+}
 
 
-
+<br />
 
 <a href="/event/create" class="btn btn-primary">Create a new Meetup</a>
 

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using MeetupWebApp.Data.Entities;
-using MeetupWebApp.Features.Events;
+using MeetupWebApp.Shared.ViewModels;
 
 namespace MeetupWebApp.Shared
 {

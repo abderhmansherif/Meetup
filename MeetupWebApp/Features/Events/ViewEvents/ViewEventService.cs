@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MeetupWebApp.Data;
 using MeetupWebApp.Data.Entities;
+using MeetupWebApp.Shared.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 

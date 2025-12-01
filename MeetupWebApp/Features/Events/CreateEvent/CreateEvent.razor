@@ -1,5 +1,9 @@
 ﻿@page "/event/create"
 @using MeetupWebApp.Features.Events
+@using MeetupWebApp.Shared.ViewModels
+@using SixLabors.ImageSharp
+@using SixLabors.ImageSharp.Formats.Png
+@using SixLabors.ImageSharp.Processing
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject CreateEventService CreateEventService
@@ -58,7 +62,24 @@
         <InputText @bind-value="_eventViewModel.Location" id="location" class="form-control" />
         <ValidationMessage For="() => _eventViewModel.Location"></ValidationMessage>
     </div>
+    <br />
 
+    <div class="form-group">
+        <label for="coverimage">Cover Image</label>
+        <InputFile id="coverimage" class="form-control" accept=".png, .jpg, .jpeg, .webp" OnChange="HandleImageUpload" />
+        <ValidationMessage For="() => _eventViewModel.ImageFile"></ValidationMessage>
+    </div>
+    <br />
+     
+    @if(_eventViewModel.ImageUrl is not null)
+    {
+        <img src="@_eventViewModel.ImageUrl"
+             width="200"
+             style="object-fit: cover;"
+             class="img-thumbnail" />        
+    }
+
+    <br />
     <br />
 
     <button type="submit" class="btn btn-primary">Create Meetup</button>
@@ -100,5 +121,46 @@
             NavigationManager.NavigateTo("/");
         }
 
+    }
+
+    public async Task HandleImageUpload(InputFileChangeEventArgs e)
+    {
+        if (e is null)
+        {
+            ErrorMessage = "No Image Uploaded";
+            return;
+        }
+
+        if (e.File.Size > 5 * 1024 * 1024)
+        {
+            ErrorMessage = "Image too big";
+            return;
+        }
+
+        _eventViewModel.ImageFile = e.File;
+
+        try
+        {
+            //define a file name and file path
+            string FileName = Guid.NewGuid().ToString() + Path.GetExtension(e.File.Name);
+            string FilePath = Path.Combine("wwwroot", "images", "events", $"{FileName}");
+
+            //Resize the image and Save it
+            using var filestream = _eventViewModel.ImageFile.OpenReadStream();
+            using var image = await Image.LoadAsync(filestream);
+
+            image.Mutate(x => x.Resize(300, 169));
+
+            var filepathstream = new FileStream(FilePath, FileMode.Create);
+            await image.SaveAsync(filepathstream, new PngEncoder());
+
+            // Set the Image Url
+            _eventViewModel.ImageUrl = $"/images/events/{FileName}";
+
+            ErrorMessage = string.Empty;
+        } catch(Exception ex)
+        {
+            ErrorMessage = "Server Error, please try again and upload another cover image.";
+        }
     }
 }

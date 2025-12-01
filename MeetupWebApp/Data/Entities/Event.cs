@@ -29,6 +29,9 @@ namespace MeetupWebApp.Data.Entities
         public int Capacity { get; set; }
         public string? Location { get; set; }
         public string? EventLink { get; set; }
+
+        [Required]
+        public string ImageUrl { get; set; } =null!;
         public int OrganizerId { get; set; }
     }
 }

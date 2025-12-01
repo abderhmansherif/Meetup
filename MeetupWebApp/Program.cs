@@ -27,6 +27,9 @@ builder.Services.AddMudServices();
 
 var app = builder.Build();
 
+app.UseStaticFiles();
+app.MapStaticAssets();
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -38,8 +41,8 @@ app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages:
 app.UseHttpsRedirection();
 app.UseAntiforgery();
 
-app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
 
 app.Run();
