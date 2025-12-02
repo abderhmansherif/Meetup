@@ -17,6 +17,13 @@
         <ErrorMessageFragment>
             <ErrorMessageComponent ErrorMessage="@ErrorMessage"></ErrorMessageComponent>
         </ErrorMessageFragment>
+
+        <ExtraButtons>
+            <DeleteEventComponent EventName="@EventViewModel.Title"
+                                  EventId="@EventViewModel.Id"
+                                  ClassName="btn btn-danger">
+            </DeleteEventComponent>
+        </ExtraButtons>
  
     </AddOrEditEventComponent>
 }
@@ -31,6 +38,8 @@ else
     public int EventId { get; set; }
 
     public EventViewModel EventViewModel { get; set; } = new();
+
+    private ModelDialogComponent modelDialog = new();
 
     [Parameter]
     public string ErrorMessage { get; set; } = string.Empty;
@@ -63,4 +72,5 @@ else
         ErrorMessage = string.Empty;
     }
 
+    
 }

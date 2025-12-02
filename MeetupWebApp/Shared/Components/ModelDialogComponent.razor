@@ -1,0 +1,61 @@
+﻿@if (showDialog)
+{
+    <div class="modal fade show" tabindex="-1" style="display:block; background-color: rgba(0,0,0,0.65);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirm</h5>
+                    <button type="button"
+                            class="btn-close btn-close-white"
+                            @onclick="@(() => { showDialog = false; StateHasChanged(); })">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <p class="mb-0">@ConfirmMessage</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-secondary"
+                            @onclick="@(() => { showDialog = false; StateHasChanged(); })">
+                        Close
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-danger"
+                            @onclick="Delete">
+                        Delete
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+}
+
+@code {
+    [Parameter]
+    public string? ConfirmMessage { get; set; } = string.Empty;
+
+    private Action? action;
+
+    public bool showDialog = false;
+
+    public void ShowModel(string msg, Action action)
+    {
+        showDialog = true;
+        ConfirmMessage = msg;
+        this.action = action;
+        StateHasChanged();
+    }
+
+    public void Delete()
+    {
+        showDialog = false;
+        ConfirmMessage = null;
+        action?.Invoke();
+        StateHasChanged();
+    }
+}

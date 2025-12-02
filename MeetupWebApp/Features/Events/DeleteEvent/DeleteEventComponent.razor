@@ -1,0 +1,60 @@
+﻿@inject DeleteEventService DeleteEventService
+@inject NavigationManager NavigationManager
+
+
+
+<button class="@ClassName" type="button" @onclick="ShowModelDialog">Delete</button>
+
+<br />
+<br />
+
+
+<ErrorMessageComponent ErrorMessage="@ErrorMessage"></ErrorMessageComponent>
+
+
+<ModelDialogComponent @ref="ModelDialogComponent"></ModelDialogComponent>
+
+<br />
+
+@code {
+    public ModelDialogComponent ModelDialogComponent = new();
+
+    [Parameter]
+    public string EventName { get; set; } = string.Empty;
+
+    [Parameter]
+    public int EventId { get; set; }
+
+    [Parameter]
+
+    public string ClassName { get; set; } = string.Empty;
+
+    private string ErrorMessage = string.Empty;
+
+    public void ShowModelDialog()
+    {
+        ModelDialogComponent.ShowModel($"Are you sure you want to delete this meetup: {EventName}", async () =>
+        {
+            if (!await DeleteEventService.IsDeletable(EventId))
+            {
+                ErrorMessage = "You can not delete an event that has already happend.";
+                StateHasChanged();
+
+                return;
+            }
+
+            // Delete Event 
+            if (await DeleteEventService.DeleteEventAsync(EventId))
+            {
+                NavigationManager.NavigateTo("/", true);
+                return;
+            }
+
+            ErrorMessage = "Faild to delete meetup, Try Agian";
+            StateHasChanged();
+
+        });
+    }
+
+
+}

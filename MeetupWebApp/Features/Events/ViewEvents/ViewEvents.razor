@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using MeetupWebApp.Features.Events.Shared
 @inject ViewEventService ViewEventService
+@rendermode InteractiveServer
 
 <PageTitle>Explore Meetups</PageTitle>
 
@@ -21,6 +22,7 @@
                         <th>Begin</th>
                         <th>End</th>
                         <th>Capacity</th>
+                        <th> </th>
                     </tr>
                 </thead>
 
@@ -55,6 +57,12 @@
                                 @(Event.Capacity == 0
                                                         ? "Unlimited"
                                                         : Event.Capacity.ToString())
+                            </td>
+
+                            <td>
+                                <DeleteEventComponent EventId="@Event.Id"
+                                                      EventName="@Event.Title"
+                                                      ClassName="btn btn-link"></DeleteEventComponent>
                             </td>
                         </tr>
                     }
