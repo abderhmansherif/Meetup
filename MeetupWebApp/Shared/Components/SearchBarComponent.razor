@@ -4,8 +4,8 @@
 @inject SharedHelper SharedHelper;
 
 <div class="d-flex" role="search">
-    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" @bind:event=oninput @bind ="SearchWord">
-    <button class="btn btn-outline-light" type="button" @onclick="Search">Search</button>
+    <input class="form-control me-2" type="search" placeholder="Search" @onkeypress="HandleKey"  aria-label="Search" @bind:event=oninput @bind="SearchWord">
+    <button class="btn btn-outline-light" type="button"  @onclick="Search">Search</button>
 </div>
 
 @code{
@@ -24,6 +24,14 @@
         var Uri = new Uri(NavigationManager.Uri);
 
         NavigationManager.NavigateTo($"{Uri.AbsolutePath}?search={SearchWord}", forceLoad: true);
+    }
+
+    public void HandleKey(KeyboardEventArgs key)
+    {
+        if (key.Key == "Enter")
+        {
+            Search();
+        }
     }
 
 }

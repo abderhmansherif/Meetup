@@ -162,4 +162,37 @@ in events page the navigation is  holds the query string to that page so we will
 
 </code>
 
+Note that : the NavigationManager is registered as a singleton service that means once you navigate in a page the navigation holds the url even 
+you in this page use another service that also use NavigationManager will also holds the same url 
+example let imagine that you in search component in layout uses NavigationManager and also in the page uses NavigationManager and also 
+in that page you use service that uses also NavigationManager 
+
+so once you navigate to page the NavigationManager.Uri in search component is the same in NavigationManager.Uri in the page also is the same when the service 
+uses NavigationManager in the page so the conclusion is the NavigationManager.Uri will be the same in any part of the page (service, layout, ...)
+because the page is not stand alone it depends on layout and also services 
+
+so as we saw in the SearchComponent we Navigate To "/events" page but we need to search in the current page means if we in any page that Display data 
+we need to search on it not only search in the "/events" page
+
+so the solution is very simple so as we said that the NavigationManager.Uri is will be the same once you navigate to any page 
+so there is in Uri class property called "AbsolutePath" that returns the after the url host and before the query string 
+that means if the url for example "/events?search=key" -> AbsolutePath = /events
+
+so we will get the url from the navigation manager and get that AbsolutePath and Navigate to it using NavigationManager 
+
+for example if we in page it's route is "/users" 
+so in search the component if we once search the Navigate to url will be -> "/users?search=key"
+also if we in events page the Navigate Url will be -> "events?search=key" ans so on 
+
+and in each page that display the data instead of displayign from the database directoy 
+we get the data based on the searchword that will be passed to us by the NavigationManager 
+
+so the flow is 
+we are currently in page it's route is "products"
+so that means the NavigationManager have that url "https://host/products"
+so once we searched in that page using the searchbar will be naviagted to NavigationManager.NavigateTo($"{AbsolutePath}?search={word}")
+and as we said that the AbsolutePath will be products because we in products page so will redirect to the same page that we in but with diffrent url 
+instead of just "/products" will be "/products?search=key"
+so in that page we will get the data based on the search key only and if it null basically get the all data
+
 
