@@ -1,0 +1,165 @@
+==> What I Learnt From that project  <==
+
+=> Search and Filering Meetups 
+
+so the flow when the user search 
+#first the user write his search keyword and then type search button
+#second in Search Filter ( that i made ) filter if the search keyword is in Events Titles if not then is in Events Descreption 
+	if not then is in Events Locations so else (we not found any thing) then i will return the newest events (i will not return an empty page)
+	
+
+so we need first to check the fiter results with user search key if returned an empty list (that means maybe the word is out of the context) 
+then i will return the newest events.
+the below example for that filter (in service)
+
+<code>
+	 private async Task<List<Event>> SearchFilter (ApplicationDbContext context , string? searchWord)
+        {
+
+            return await context.Events.AsNoTracking().Where(x => (x.BeginDate > DateOnly.FromDateTime(DateTime.Now) 
+                                                    || (x.BeginDate == DateOnly.FromDateTime(DateTime.Now) && 
+                                                            x.BeginTime >= TimeOnly.FromDateTime(DateTime.Now))) && 
+                                            (string.IsNullOrEmpty(searchWord) || x.Title.Contains(searchWord) || x.Description.Contains(searchWord) || x.Location.Contains(searchWord)))
+                                            .OrderByDescending(x => x.BeginDate)
+                                            .ThenByDescending(x => x.BeginTime)
+                                            .ToListAsync();
+        }
+</code>
+
+
+so that is basically the filter, it returns the newest events && events title, Descreption and any locations that match that keyword if not
+    then return jsut newest events (How) because that condition ** string.IsNullOrEmpty(searchWord) ** 
+
+so how to know if the word is empty and also knowing if there is no events that match the keyword how 
+look at this 
+
+<code>
+      public async Task<List<EventViewModel>> GetEventsAsync(string searchWord)
+        {
+            using var context = await Factory.CreateDbContextAsync();
+
+            var events = await SearchFilter(context, searchWord);
+
+            if(events.Count == 0 && !string.IsNullOrEmpty(searchWord))
+            {
+                searchWord = null;
+                events = await SearchFilter(context, searchWord);
+            }
+
+            return Mapper.Map<List<EventViewModel>>(events);
+        }
+</code>
+
+so basically if not returned any events && the searchkey is not empty that means that there is not matches then i will pass null to the filter
+and retuen just the newest events by that condition in the filter with that condition ** string.IsNullOrEmpty(searchWord) **
+===================================================
+=> using the search bar component in layout and also search in the same page not redirect to single page
+
+When integrating the Search Bar inside the main Layout, the goal was to run the search on the same page without redirecting to a different route.
+This heavily relies on how the NavigationManager handles URLs and query strings.
+
+How the Flow Works With NavigationManager
+
+When you're on a page like /events and you trigger a search, you might think you need to modify the page’s route to include the query parameter, like:
+
+/events?search={key}
+
+
+Then you might assume:
+
+“Since I'm navigating to /events?search=key, I must update the route definition to match that pattern.”
+
+But here’s the important part:
+
+NavigationManager Is Smarter Than That
+
+If you call:
+
+NavigationManager.NavigateTo("/events?search=key");
+
+
+Blazor does not require your page route to explicitly support query strings.
+Even if your page only has the route:
+
+@page "/events"
+
+
+Blazor will still navigate to:
+
+/events?search=key
+
+and the component will load normally — the query string is simply attached to the URL, not part of the routing pattern.
+
+---
+so how to use the search bar in layout component and also search 
+
+first of all the search bar is like this 
+
+<code>
+    
+    <div class="d-flex" role="search">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" @bind:event=oninput @bind ="SearchWord">
+        <button class="btn btn-outline-light" type="button" @onclick="Search">Search</button>
+    </div>
+
+</code>
+
+#first so let's define a string for search keyword and bind it with the input  
+#second and once the user types search we will handle that search by that method that navigate to the page that displays the events somthing lke that
+<code>
+
+     public void Search()
+    {
+        if (string.IsNullOrEmpty(SearchWord))
+            return;
+
+        var Uri = new Uri(NavigationManager.Uri);
+
+        NavigationManager.NavigateTo($"events?search={SearchWord}", forceLoad: true);
+    }
+
+</code>
+
+so the navigation manager will navigate to the "/events" page as we told but also holding the query string so it is the basically is the search 
+
+#third go to the events page and recive that key search from the query string how?
+
+by getting the url from the navigation manager and gets the query string 
+and then using HttpUtitlity that takes the query string and retuen it wil key value pair and then key the data or the search key for "search" key that we typed in the url 
+
+Fact: if you navigate the any page the Navigation Manager holds the url and if there is query string will hold that thing 
+Note that any page you access remeber that Navigation Manager holds the full url so will use it 
+in events page the navigation is  holds the query string to that page so we will get the url 
+
+<code>
+    @page "/events"
+
+    @*
+        Display the Events Here
+    *@
+
+
+    @code 
+    {
+        public var events = new List<EventViewMode>();
+
+        protected override async Task OnParameterSetAsync()
+        {
+            // get the url from NavigationManager
+            Uri Uri = new(NavigationManager.Uri);
+
+            // Get the query string from the url
+            var Query = HttpUtility.ParseQueryString(Uri.Query);
+
+            // and get the Key:value (key of query param name, value query param value)
+            // and we know the key that we Naviagte to from the search bar -> "?search=key" are remember that ?
+            var QueryParamValue = Query["search"] ?? string.Empty;
+
+            // using the search filter service and gets the events
+            events = DiscoverEventsService.GetEvents(QueryParamValue);
+        }
+    }
+
+</code>
+
+

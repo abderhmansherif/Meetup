@@ -1,0 +1,59 @@
+﻿@page "/events"
+@using System.Web
+@using MudBlazor
+@rendermode InteractiveServer
+
+@inject DiscoverEventsService DiscoverEventsService
+@inject NavigationManager NavigationManager
+@inject SharedHelper SharedHelper
+
+<h3>Discover Events</h3>
+
+@if(events is not null && events.Count > 0)
+{
+    <div class="row g-4">
+        @foreach (var ev in events)
+        {
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card h-100 shadow-sm">
+                    <a href="#" >
+                        @if (!string.IsNullOrEmpty(ev.ImageUrl))
+                        {
+                            <img src="@ev.ImageUrl" class="card-img-top" alt="@ev.Title" style="height:200px; object-fit:cover;">
+                        }
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@ev.Title</h5>
+                            <p class="card-text">@ev.Description</p>
+                            @if (!string.IsNullOrEmpty(ev.Category))
+                            {
+                                <span class="badge bg-primary mb-2">@ev.Category</span>
+                            }
+                        </div>
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+
+}
+else
+{
+    <p><text>Loading...</text></p>
+}
+
+
+
+
+
+
+@code {
+
+    public List<EventViewModel> events = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        
+        events = await DiscoverEventsService.GetEventsAsync(await SharedHelper.GetParamValueAsync("search"));
+    }
+
+}

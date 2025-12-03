@@ -1,0 +1,30 @@
+﻿@rendermode InteractiveServer
+
+@inject NavigationManager NavigationManager
+@inject SharedHelper SharedHelper;
+
+<div class="d-flex" role="search">
+    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" @bind:event=oninput @bind ="SearchWord">
+    <button class="btn btn-outline-light" type="button" @onclick="Search">Search</button>
+</div>
+
+@code{
+    public string? SearchWord { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        SearchWord = await SharedHelper.GetParamValueAsync("search");
+    }
+
+    public void Search()
+    {
+        if (string.IsNullOrEmpty(SearchWord))
+            return;
+
+        var Uri = new Uri(NavigationManager.Uri);
+
+        NavigationManager.NavigateTo($"{Uri.AbsolutePath}?search={SearchWord}", forceLoad: true);
+    }
+
+}
+

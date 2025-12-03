@@ -1,6 +1,9 @@
 ﻿@page "/"
 @using MeetupWebApp.Features.Events.Shared
+@using System.Web
 @inject ViewEventService ViewEventService
+@inject DiscoverEventsService DiscoverEventsService
+@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 <PageTitle>Explore Meetups</PageTitle>
@@ -85,13 +88,22 @@ else
 @code {
 
     [PersistentState(AllowUpdates = true, RestoreBehavior = RestoreBehavior.SkipLastSnapshot)]
-    public List<EventViewModel>? Events { get; set; } 
+    public List<EventViewModel>? Events { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     if(Events is null)
+    //     {
+
+    //     }
+    // }
+
+    protected override async Task OnParametersSetAsync()
     {
-        if(Events is null)
-        {
-            Events = await ViewEventService.GetEventsAsync();
-        }
+        var Uri = new Uri(NavigationManager.Uri);
+        var QueryParam = HttpUtility.ParseQueryString(Uri.Query);
+        var searchWord = QueryParam["search"] ?? "";
+
+        Events = await DiscoverEventsService.GetEventsAsync(searchWord);
     }
 }

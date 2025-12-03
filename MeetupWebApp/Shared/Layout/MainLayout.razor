@@ -1,17 +1,24 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+            Meetup
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <SearchBarComponent></SearchBarComponent>
         </div>
+    </div>
+</nav>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+
+
+<main class="container mx-auto">
+    @Body
+</main>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.

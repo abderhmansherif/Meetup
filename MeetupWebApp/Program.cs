@@ -21,19 +21,13 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(op =>
 });
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
-
 builder.Services.AddTransient<CreateEventService>();
-
 builder.Services.AddTransient<ViewEventService>();
-
 builder.Services.AddTransient<SharedHelper>();
-
 builder.Services.AddTransient<EditEventsService>();
-
 builder.Services.AddTransient<EventValidationService>();
-
 builder.Services.AddTransient<DeleteEventService>();
-
+builder.Services.AddTransient<DiscoverEventsService>();
 builder.Services.AddMudServices();
 
 var app = builder.Build();
