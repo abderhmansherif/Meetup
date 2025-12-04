@@ -194,5 +194,60 @@ so once we searched in that page using the searchbar will be naviagted to Naviga
 and as we said that the AbsolutePath will be products because we in products page so will redirect to the same page that we in but with diffrent url 
 instead of just "/products" will be "/products?search=key"
 so in that page we will get the data based on the search key only and if it null basically get the all data
+so the result is need to get that data for each page displays the data like we did in "/evenst"
+
+there is another problem after render the page the key word is gone after rendering that is also a normal behavior 
+so to solve this as we told the navigationMnaagaer Uri is the same in the page or in other component such as service
+or layout so
+
+to solve this we bind the searchword in string property in initializing let it the string property 
+instead of just bind from the input no 
+it inittialzed from the Navigation
+so we will do the same process to the get the value amd assign to the string proprty 
+in first searcg will be null or empty because there is no search happen the uri is just like this "users"
+but after first search the string property that bind to the inpurt will reed the value from the url 
+and that after rendering will be exist 
+let's talk look 
+at this example i implemented this in service 
+
+<code>
+        // we know that the "search"
+        public async Task<string> GetParamValueAsync (string QueryParam)
+        {
+            Uri Uri = new(NavigationManager.Uri);
+
+            var Query = HttpUtility.ParseQueryString(Uri.Query);
+
+            var QueryParamValue = Query[QueryParam] ?? string.Empty;
+
+            return QueryParamValue;
+        }
+
+</code>
+
+and in the searhc bar component 
+
+<code>
+
+     public string? SearchWord { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        SearchWord = await SharedHelper.GetParamValueAsync("search");
+    }
+    
+</code>
+
+SearchWord that is the value we bind in the input 
+
+and also we can use that method to get the searchword in any page
+
+<code>
+            events = await DiscoverEventsService.GetEventsAsync(await SharedHelper.GetParamValueAsync("search"));
+
+</code>
+
+==============================---
+
 
 

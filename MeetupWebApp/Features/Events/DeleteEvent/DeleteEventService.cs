@@ -19,9 +19,9 @@ namespace MeetupWebApp.Features.Events.DeleteEvent
 
             if(meetup is not null)
             {
-                if (meetup.EndDate < DateOnly.FromDateTime(DateTime.Now)
-                    || (meetup.EndDate == DateOnly.FromDateTime(DateTime.Now)
-                        && meetup.EndTime <= TimeOnly.FromDateTime(DateTime.Now)))
+                if (meetup.BeginDate < DateOnly.FromDateTime(DateTime.Now)
+                    || (meetup.BeginDate == DateOnly.FromDateTime(DateTime.Now)
+                        && meetup.BeginTime <= TimeOnly.FromDateTime(DateTime.Now)))
                 {
                     return false;
                 }
