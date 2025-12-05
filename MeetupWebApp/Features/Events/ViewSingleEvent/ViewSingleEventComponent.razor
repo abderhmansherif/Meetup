@@ -1,0 +1,45 @@
+﻿@page "/events/{id:int}"
+@inject ViewSingleEventService viewSingleEventService
+
+
+
+@if(eventViewModel is not null)
+{
+    <PageTitle>@eventViewModel.Title</PageTitle>
+
+    <h2>@eventViewModel.Title</h2>
+
+    <hr />
+
+    <p>
+        <img src="@eventViewModel.ImageUrl" />
+    </p>
+
+    <br />
+
+    <h4><bold>Details</bold></h4>
+
+    <pre>
+        @eventViewModel.Description
+    </pre>
+}
+else
+{
+    <p><em>Loading....</em></p>
+}
+
+
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+
+    [PersistentState(AllowUpdates = true)]
+
+    public EventViewModel eventViewModel { get; set; } = null!;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        eventViewModel = await viewSingleEventService.GetEventByIdAsync(id);
+    }
+}

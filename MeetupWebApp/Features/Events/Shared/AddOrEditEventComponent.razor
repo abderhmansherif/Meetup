@@ -23,7 +23,7 @@
 
             <div class="mb-3">
                 <label for="Desc" class="form-label">Description</label>
-                <InputText @bind-Value="EventViewModel.Description" id="Desc" class="form-control" />
+                <InputTextArea rows="8" @bind-Value="EventViewModel.Description" id="Desc"  class="form-control " />
                 <ValidationMessage For="@(() => EventViewModel.Description)" />
             </div>
 
@@ -94,7 +94,7 @@
 
             <div class="mb-3">
                 <label for="coverimage" class="form-label">Cover Image</label>
-                <InputFile id="coverimage" class="form-control" accept=".png,.jpg,.jpeg,.webp" OnChange="HandleImageUpload" />
+                    <InputFile id="coverimage" class="form-control" accept=".png,.jpg,.jpeg,.webp,.avi" OnChange="HandleImageUpload" />
                 <ValidationMessage For="() => EventViewModel.ImageFile" />
             </div>
 
@@ -123,7 +123,7 @@
                         <button type="submit" class="btn btn-primary">Create Meetup</button>
                     }
 
-                    <a class="btn btn-secondary" href="/">Cancel</a>
+                    <a class="btn btn-secondary" href="/org/events">Cancel</a>
 
                      @if (EventViewModel.Id > 0 && ExtraButtons is not null)
                     {

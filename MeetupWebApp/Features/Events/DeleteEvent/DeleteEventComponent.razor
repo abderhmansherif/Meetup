@@ -46,7 +46,7 @@
             // Delete Event 
             if (await DeleteEventService.DeleteEventAsync(EventId))
             {
-                NavigationManager.NavigateTo("/events", true);
+                NavigationManager.NavigateTo("/org/events", true);
                 return;
             }
 

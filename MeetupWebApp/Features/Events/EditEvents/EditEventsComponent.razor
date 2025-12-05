@@ -61,7 +61,7 @@ else
         // Updating Event
         await EditEventsService.UpdateEventAsync(EventViewModel);
 
-        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/org/events");
     }
 
     public async Task HandleError(string msg)

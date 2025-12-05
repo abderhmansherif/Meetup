@@ -1,4 +1,7 @@
-﻿@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase 
+
+@inject LayoutService LayoutService
+
 
 <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
     <div class="container-fluid">
@@ -20,8 +23,23 @@
     @Body
 </main>
 
+@if(LayoutService.renderFragment is not null)
+{
+    @LayoutService.renderFragment;
+}
+
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code
+{
+    protected override async Task OnInitializedAsync()
+    {
+        LayoutService.OnViewEvent += StateHasChanged;
+    }
+
+  
+}

@@ -4,7 +4,9 @@ using MeetupWebApp.Features.Events.DeleteEvent;
 using MeetupWebApp.Features.Events.EditEvents;
 using MeetupWebApp.Features.Events.Shared;
 using MeetupWebApp.Features.Events.ViewEvents;
+using MeetupWebApp.Features.Events.ViewSingleEvent;
 using MeetupWebApp.Shared;
+using MeetupWebApp.Shared.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
@@ -28,6 +30,8 @@ builder.Services.AddTransient<EditEventsService>();
 builder.Services.AddTransient<EventValidationService>();
 builder.Services.AddTransient<DeleteEventService>();
 builder.Services.AddTransient<DiscoverEventsService>();
+builder.Services.AddTransient<ViewSingleEventService>();
+builder.Services.AddTransient<LayoutService>();
 builder.Services.AddMudServices();
 
 var app = builder.Build();

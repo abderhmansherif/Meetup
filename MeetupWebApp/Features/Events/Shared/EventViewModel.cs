@@ -11,7 +11,7 @@ namespace MeetupWebApp.Features.Events.Shared
         [StringLength(maximumLength: 50)]
         public string Title { get; set; } = null!;
 
-        [StringLength(200)]
+        [StringLength(4000)]
         public string? Description { get; set; }
         [Required]
         public DateOnly BeginDate { get; set; }
