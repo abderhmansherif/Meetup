@@ -1,0 +1,71 @@
+﻿@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Components.Authorization
+
+@rendermode InteractiveServer
+@inject IAuthenticationSchemeProvider AuthenticationSchemeProvider
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@if (_Event is not null)
+{
+    <footer>
+        <div class="container-fluid bg-dark text-white position-fixed bottom-0 w-100 py-2">
+            <div class="container d-flex align-items-center">
+                <div class="container">
+                    <p class="mt-1 mb-0 card-text">@($"{_Event.BeginDate:ddd MMM d} - {_Event.BeginTime:h:mm tt}".ToUpper())</p>
+                    <p class="card-title fw-bold">@_Event.Title</p>
+                </div>
+                <div class="ms-3">
+                    <button class="btn btn-outline-light" @onclick="Attend">Attend</button>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <DialogComponent @ref="DialogComp" Title="Sign in first to attend.">
+        
+        <Content>
+           <ExternalLoginButtonsComponent></ExternalLoginButtonsComponent>
+        </Content>
+    </DialogComponent>
+
+
+    <ModelDialogConfimationComponent @ref="ModelDialogConfimation"></ModelDialogConfimationComponent>
+}
+
+
+
+
+@code{
+    [Parameter]
+    public EventViewModel _Event { get; set; } = new();
+
+    public DialogComponent DialogComp = new();
+
+    public AuthenticationState? AuthenticationState;
+
+    public ModelDialogConfimationComponent? ModelDialogConfimation = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    }
+
+    public void Attend()
+    {
+        if (AuthenticationState is not null && (AuthenticationState?.User?.Identity?.IsAuthenticated ?? false))
+        {
+            ModelDialogConfimation?.ShowModel($"Are Sure you want to attend {_Event.Title}", () =>
+            {
+                // Set Attendee to that Meetup
+            });
+
+            return;
+        }
+        DialogComp.ShowModel();
+        return;
+    }
+
+    
+}

@@ -3,7 +3,7 @@ using MeetupWebApp.Data;
 using MeetupWebApp.Features.Events.Shared;
 using Microsoft.EntityFrameworkCore;
 
-namespace MeetupWebApp.Features.Events.ViewSingleEvent
+namespace MeetupWebApp.Features.ViewSingleEvent
 {
     public class ViewSingleEventService
     {

@@ -1,5 +1,5 @@
 ﻿@inherits LayoutComponentBase 
-
+@implements IDisposable 
 @inject LayoutService LayoutService
 
 
@@ -12,7 +12,13 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
-            <SearchBarComponent></SearchBarComponent>
+            <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                <SearchBarComponent></SearchBarComponent> 
+            </ul>
+
+            <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+                <AuthentixationStateNav></AuthentixationStateNav> 
+            </ul>
         </div>
     </div>
 </nav>
@@ -23,10 +29,14 @@
     @Body
 </main>
 
-@if(LayoutService.renderFragment is not null)
-{
-    @LayoutService.renderFragment;
-}
+<div>
+    @if (LayoutService.ContentRender is not null)
+    {
+        @LayoutService.ContentRender
+    }
+</div>
+
+
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
@@ -36,9 +46,20 @@
 
 @code
 {
+
     protected override async Task OnInitializedAsync()
     {
-        LayoutService.OnViewEvent += StateHasChanged;
+        LayoutService.OnViewEvent += UpdateLayoutSection;
+    }
+
+    public async void UpdateLayoutSection()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        LayoutService.OnViewEvent -= UpdateLayoutSection;
     }
 
   

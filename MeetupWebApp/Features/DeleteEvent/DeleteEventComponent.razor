@@ -1,6 +1,6 @@
 ﻿@inject DeleteEventService DeleteEventService
 @inject NavigationManager NavigationManager
-
+@inherits BaseComponent
 
 
 <button class="@ClassName" type="button" @onclick="ShowModelDialog">Delete</button>
@@ -12,12 +12,12 @@
 <ErrorMessageComponent ErrorMessage="@ErrorMessage"></ErrorMessageComponent>
 
 
-<ModelDialogComponent @ref="ModelDialogComponent"></ModelDialogComponent>
+<DeleteDialogComponent @ref="ConfirmDialogComponent"></DeleteDialogComponent>
 
 <br />
 
 @code {
-    public ModelDialogComponent ModelDialogComponent = new();
+    public DeleteDialogComponent ConfirmDialogComponent = new();
 
     [Parameter]
     public string EventName { get; set; } = string.Empty;
@@ -33,7 +33,7 @@
 
     public void ShowModelDialog()
     {
-        ModelDialogComponent.ShowModel($"Are you sure you want to delete this meetup: {EventName}", async () =>
+        ConfirmDialogComponent.ShowModel($"Are you sure you want to delete this meetup: {EventName}", async () =>
         {
             if (!await DeleteEventService.IsDeletable(EventId))
             {

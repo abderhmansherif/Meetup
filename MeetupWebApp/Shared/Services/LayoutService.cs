@@ -5,11 +5,11 @@ namespace MeetupWebApp.Shared.Services
     public class LayoutService
     {
         public Action? OnViewEvent;
-        public RenderFragment? renderFragment { get; set; }
+        public RenderFragment? ContentRender { get; set; }
 
-        public void SetFooter(RenderFragment fragment)
+        public void SetContentRender(RenderFragment fragment)
         {
-            renderFragment = fragment;
+            ContentRender = fragment;
             OnViewEvent?.Invoke();
         }
     }

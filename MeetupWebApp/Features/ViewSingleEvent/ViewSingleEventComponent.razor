@@ -1,7 +1,8 @@
 ﻿@page "/events/{id:int}"
+@using MeetupWebApp.Features.RSVPEvent
 @inject ViewSingleEventService viewSingleEventService
-
-
+@inject LayoutService layoutService
+@rendermode InteractiveServer
 
 @if(eventViewModel is not null)
 {
@@ -22,6 +23,10 @@
     <pre>
         @eventViewModel.Description
     </pre>
+
+    
+
+
 }
 else
 {
@@ -41,5 +46,7 @@ else
     protected override async Task OnParametersSetAsync()
     {
         eventViewModel = await viewSingleEventService.GetEventByIdAsync(id);
+
+        layoutService.SetContentRender(@<RSVPEventFooterComponent _Event="eventViewModel" />);
     }
 }

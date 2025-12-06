@@ -3,7 +3,7 @@
     <div class="modal fade show" tabindex="-1" style="display:block; background-color: rgba(0,0,0,0.65);">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header bg-danger text-white">
+                <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title">Confirm</h5>
                     <button type="button"
                             class="btn-close btn-close-white"
@@ -19,13 +19,13 @@
                     <button type="button"
                             class="btn btn-secondary"
                             @onclick="@(() => { showDialog = false; StateHasChanged(); })">
-                        Close
+                        Cencel
                     </button>
 
                     <button type="button"
-                            class="btn btn-danger"
+                            class="btn btn-primary"
                             @onclick="Delete">
-                        Delete
+                        Attend
                     </button>
                 </div>
 

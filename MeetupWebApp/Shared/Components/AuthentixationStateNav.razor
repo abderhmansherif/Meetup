@@ -1,0 +1,72 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<ul class="navbar-nav ms=auto">
+    @if (AuthenticationState is not null && (AuthenticationState.User?.Identity?.IsAuthenticated ?? false))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-light" href="#">Hello, @UserName</a>
+
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-light btn btn-link" @onclick="Logout">Logout</a>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link text-light btn btn-link" @onclick="Login">Login</a>
+        </li>
+    }
+</ul>
+
+<DialogComponent @ref="DialogComp" Title="Sign in first to attend.">
+
+    <Content>
+        <ExternalLoginButtonsComponent></ExternalLoginButtonsComponent>
+    </Content>
+</DialogComponent>
+
+
+
+@code{
+    public AuthenticationState? AuthenticationState;
+
+    public bool IsAuthenticated = false;
+
+    public string? UserPicture = string.Empty;
+
+    public string? Email = string.Empty;
+
+    public string UserName = string.Empty;
+
+    DialogComponent DialogComp = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        if (AuthenticationState is not null && (AuthenticationState.User?.Identity?.IsAuthenticated ?? false))
+        {
+            UserPicture = AuthenticationState.User?.FindFirst("urn:google:picture")?.Value ?? string.Empty;
+
+            Email = AuthenticationState.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value ?? string.Empty;
+
+            UserName = AuthenticationState.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value ?? string.Empty;
+        }
+
+    }
+
+    public void Login()
+    {
+        DialogComp.ShowModel();
+    }
+
+    public void Logout()
+    {
+        NavigationManager.NavigateTo("logout", true);
+    }
+}

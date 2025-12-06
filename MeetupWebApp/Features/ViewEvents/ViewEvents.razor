@@ -1,9 +1,11 @@
 ﻿@page "/org/events"
-@using MeetupWebApp.Features.Events.Shared
-@using System.Web
+@using MeetupWebApp.Features.DeleteEvent
+
 @inject ViewEventService ViewEventService
 @inject DiscoverEventsService DiscoverEventsService
 @inject NavigationManager NavigationManager
+@inherits BaseComponent
+
 @rendermode InteractiveServer
 
 <PageTitle>Explore Meetups</PageTitle>
@@ -89,14 +91,6 @@ else
 
     [PersistentState(AllowUpdates = true, RestoreBehavior = RestoreBehavior.SkipLastSnapshot)]
     public List<EventViewModel>? Events { get; set; }
-
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     if(Events is null)
-    //     {
-
-    //     }
-    // }
 
     protected override async Task OnParametersSetAsync()
     {

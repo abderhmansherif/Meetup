@@ -1,0 +1,59 @@
+﻿@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IAuthenticationSchemeProvider AuthenticationSchemeProvider
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+
+@if (Providers is not null)
+{
+    @foreach (var provider in Providers)
+    {
+        if (!string.IsNullOrWhiteSpace(provider.DisplayName))
+        {
+            <button class="btn btn-google btn-lg" style="width: 280px;" @onclick="@(() => AuthWithExternalProvider(provider.Name))">
+                @* <img src="https://www.svgrepo.com/show/475656/google-color.svg" style="width:24px"> *@
+                <span>
+                    Sign in with @provider.DisplayName
+                </span>
+            </button>
+            <style>
+                .btn-google {
+                    color: #545454;
+                    background-color: #ffffff;
+                    box-shadow: 0 1px 2px 1px #ddd;
+                }
+
+                    .btn-google:hover {
+                        background-color: #f1f1f1;
+                    }
+            </style>
+        }
+    }
+}
+
+
+@code
+{
+    public IEnumerable<AuthenticationScheme>? Providers;
+
+    public AuthenticationState? AuthenticationState;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Providers = await AuthenticationSchemeProvider.GetAllSchemesAsync();
+
+        AuthenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    }
+
+
+    public void AuthWithExternalProvider(string provider)
+    {
+        var returnUrl = NavigationManager.Uri;
+
+        var EncodedUrl = HttpUtility.UrlEncode(returnUrl);
+
+        NavigationManager.NavigateTo($"/Authentication/{provider}?returnurl={EncodedUrl}");
+    }
+    
+}

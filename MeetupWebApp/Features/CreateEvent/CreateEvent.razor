@@ -1,11 +1,13 @@
-﻿@page "/event/create"
-@using MeetupWebApp.Features.Events.Shared
+﻿
 
+@page "/event/create"
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject SharedHelper SharedHelper
 @inject CreateEventService CreateEventService
 @inject EventValidationService EventValidationService
+@using MeetupWebApp.Features.Events.Shared
+@inherits BaseComponent
 
 <PageTitle>New Meetup</PageTitle>
 

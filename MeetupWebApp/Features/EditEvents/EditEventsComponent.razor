@@ -1,9 +1,13 @@
 ﻿@page "/events/{EventId:int}/edit"
+@using MeetupWebApp.Features.DeleteEvent
+
 
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject EditEventsService EditEventsService
 @inject EventValidationService EventValidationService
+@inherits BaseComponent
+
 
 <PageTitle>Update Meetup</PageTitle>
 
@@ -39,7 +43,7 @@ else
 
     public EventViewModel EventViewModel { get; set; } = new();
 
-    private ModelDialogComponent modelDialog = new();
+    // private ModelDialogComponent modelDialog = new();
 
     [Parameter]
     public string ErrorMessage { get; set; } = string.Empty;

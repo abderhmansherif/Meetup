@@ -1,7 +1,7 @@
 ﻿using MeetupWebApp.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace MeetupWebApp.Features.Events.DeleteEvent
+namespace MeetupWebApp.Features.DeleteEvent
 {
     public class DeleteEventService
     {
