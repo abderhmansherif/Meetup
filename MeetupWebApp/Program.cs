@@ -5,6 +5,7 @@ using MeetupWebApp.Features.Events.CreateEvent;
 using MeetupWebApp.Features.Events.EditEvents;
 using MeetupWebApp.Features.Events.Shared;
 using MeetupWebApp.Features.Events.ViewEvents;
+using MeetupWebApp.Features.RSVPEvent;
 using MeetupWebApp.Features.ViewSingleEvent;
 using MeetupWebApp.Shared;
 using MeetupWebApp.Shared.Services;
@@ -54,6 +55,7 @@ builder.Services.AddTransient<DeleteEventService>();
 builder.Services.AddTransient<DiscoverEventsService>();
 builder.Services.AddTransient<ViewSingleEventService>();
 builder.Services.AddSingleton<LayoutService>();
+builder.Services.AddTransient<RSVPEventService>();
 builder.Services.AddMudServices();
 
 var app = builder.Build();

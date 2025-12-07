@@ -1,10 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
 
 @rendermode InteractiveServer
 @inject IAuthenticationSchemeProvider AuthenticationSchemeProvider
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject RSVPEventService RSVPEventService
 
 @if (_Event is not null)
 {
@@ -15,6 +17,11 @@
                     <p class="mt-1 mb-0 card-text">@($"{_Event.BeginDate:ddd MMM d} - {_Event.BeginTime:h:mm tt}".ToUpper())</p>
                     <p class="card-title fw-bold">@_Event.Title</p>
                 </div>
+                <div class="text-danger">
+                    @ErrorMessage
+                </div>
+                
+
                 <div class="ms-3">
                     <button class="btn btn-outline-light" @onclick="Attend">Attend</button>
                 </div>
@@ -45,21 +52,69 @@
 
     public AuthenticationState? AuthenticationState;
 
+    // public string RSVPStatus = string.Empty;
+
     public ModelDialogConfimationComponent? ModelDialogConfimation = new();
+
+    public string? ErrorMessage = string.Empty;
+
+    public string? Email;
 
     protected override async Task OnInitializedAsync()
     {
         AuthenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        if(AuthenticationState.User?.Identity?.IsAuthenticated ?? false)
+        {
+            Email = AuthenticationState.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
+        }
+
     }
+
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     RSVPStatus = await RSVPEventService.GetRSVPAttendeeStatusAsync(_Event.Id, Email ?? string.Empty);
+    // }
+
+    // public void UnAttend()
+    // {
+    //     if (AuthenticationState is not null && (AuthenticationState?.User?.Identity?.IsAuthenticated ?? false))
+    //     {
+    //         ModelDialogConfimation?.ShowModel($"Are you sure you want to UnAttend to {_Event.Title}", async () =>
+    //         {
+    //             //UnAttend Here
+    //             var result = await RSVPEventService.UnAttnedRSVPAsync(_Event.Id, Email ?? string.Empty);
+
+    //             if(!result)
+    //             {
+    //                 ErrorMessage = "Can not unattend to this meetup";
+    //             }
+    //         });
+    //         StateHasChanged();
+    //         return;
+    //     }
+
+    //     DialogComp.ShowModel();
+    //     return;
+    // }
 
     public void Attend()
     {
         if (AuthenticationState is not null && (AuthenticationState?.User?.Identity?.IsAuthenticated ?? false))
         {
-            ModelDialogConfimation?.ShowModel($"Are Sure you want to attend to {_Event.Title}", () =>
+            ModelDialogConfimation?.ShowModel($"Are Sure you want to attend to {_Event.Title}", async () =>
             {
-                // Set Attendee to that Meetup
+                bool result = await RSVPEventService.AddRSVPEventAsync(_Event.Id, Email ?? string.Empty);
 
+                if(result)
+                {
+                    NavigationManager.NavigateTo($"/Events/{_Event.Id}", true);
+                }
+                else
+                {
+                    ErrorMessage = "Can not attend to this event";
+                    StateHasChanged();
+                }
             });
 
             return;

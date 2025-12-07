@@ -1,4 +1,5 @@
 ﻿@page "/events/{id:int}"
+@using MeetupWebApp.Data.Entities
 @using MeetupWebApp.Features.RSVPEvent
 @inject ViewSingleEventService viewSingleEventService
 @inject LayoutService layoutService
@@ -6,27 +7,25 @@
 
 @if(eventViewModel is not null)
 {
-    <PageTitle>@eventViewModel.Title</PageTitle>
+    <div style="padding-bottom: 80px">
+        <h2>@eventViewModel.Title</h2>
+        <hr />
 
-    <h2>@eventViewModel.Title</h2>
+        <p>
+            <img src="@eventViewModel.ImageUrl" alt="Event Image" class="rounded" />
+        </p>
+        <br />
 
-    <hr />
+        <h6>Details</h6>
 
-    <p>
-        <img src="@eventViewModel.ImageUrl" />
-    </p>
+        <pre style="white-space: pre-wrap; word-wrap: break-word">
+            @eventViewModel.Description
+        </pre>
 
-    <br />
+        <h6>Attendees</h6>
+        <AttendeesComponent Users="Users"></AttendeesComponent>
 
-    <h4><bold>Details</bold></h4>
-
-    <pre>
-        @eventViewModel.Description
-    </pre>
-
-    
-
-
+    </div>
 }
 else
 {
@@ -43,8 +42,12 @@ else
 
     public EventViewModel eventViewModel { get; set; } = null!;
 
+    public List<User>? Users { get; set; }
+
     protected override async Task OnParametersSetAsync()
     {
+        Users = await viewSingleEventService.GetAttendees(id);
+
         eventViewModel = await viewSingleEventService.GetEventByIdAsync(id);
 
         layoutService.SetContentRender(@<RSVPEventFooterComponent _Event="eventViewModel" />);

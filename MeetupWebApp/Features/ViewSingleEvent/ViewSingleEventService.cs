@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using MeetupWebApp.Data;
+using MeetupWebApp.Data.Entities;
 using MeetupWebApp.Features.Events.Shared;
+using MeetupWebApp.Shared;
 using Microsoft.EntityFrameworkCore;
 
 namespace MeetupWebApp.Features.ViewSingleEvent
@@ -28,6 +30,23 @@ namespace MeetupWebApp.Features.ViewSingleEvent
                 }
                 return new EventViewModel();    
             }
+        }
+
+        public async Task<List<User>> GetAttendees(int EventId)
+        {
+            using var context = Factory.CreateDbContext();
+            var users = await context.RSVPs.AsNoTracking()
+                                     .Include(x => x.User)
+                                     .Where(x => x.EventId == EventId && x.Status == SharedHelper.GetRSVPGoingStatus())
+                                     .Select(x => new User()
+                                     {
+                                         Id = x.UserId,
+                                         Username = x.User!.Username,
+                                         Email = x.User.Email,
+                                     })
+                                     .ToListAsync();
+            
+            return users;
         }
 
 

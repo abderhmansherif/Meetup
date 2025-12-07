@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MeetupWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251207132737_Added RSVP & User Entities")]
-    partial class AddedRSVPUserEntities
+    [Migration("20251207162259_Brand New Database")]
+    partial class BrandNewDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -71,12 +71,7 @@ namespace MeetupWebApp.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("UserOrganizerId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserOrganizerId");
 
                     b.ToTable("Events");
                 });
@@ -136,17 +131,6 @@ namespace MeetupWebApp.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("MeetupWebApp.Data.Entities.Event", b =>
-                {
-                    b.HasOne("MeetupWebApp.Data.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserOrganizerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MeetupWebApp.Data.Entities.RSVP", b =>
