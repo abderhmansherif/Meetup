@@ -41,7 +41,7 @@ else
 
     // that means when the connection interupted 'RestoreBehavior.SkipLastSnapshot' gets the last changes 
     [PersistentState(AllowUpdates = true, RestoreBehavior = RestoreBehavior.SkipLastSnapshot)]
-    public List<EventViewModel>? events { get; set; } = new();
+    public List<EventViewModel>? events { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {

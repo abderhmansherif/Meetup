@@ -1,4 +1,10 @@
 ﻿@using MeetupWebApp.Data.Entities
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<h6>Attendees</h6>
+
 
 @if(Users is not null && Users.Count > 0)
 {
@@ -6,11 +12,22 @@
         <div class="row g-3">
             @foreach (var user in Users)
             {
-                <div class="col-lg-3 col-md-4 col-sm-6 col-12">
-                    <div class="card border-0">
-                        <p class="card-title fw-bold">@user.Username</p>
+                if (!string.IsNullOrEmpty(CurrentEmail) && CurrentEmail == user.Email)
+                {
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                        <div class="card border-0">
+                            <p class="card-title fw-bold">@user.Username (you)</p>
+                        </div>
                     </div>
-                </div>
+                }
+                else
+                {
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                        <div class="card border-0">
+                            <p class="card-title fw-bold">@user.Username</p>
+                        </div>
+                    </div>
+                }
             }
         </div>
     </div>
@@ -20,4 +37,17 @@
 @code {
     [Parameter]
     public List<User>? Users { get; set; }
+
+    public string CurrentEmail = string.Empty;
+
+    public AuthenticationState? AuthenticationState;
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (AuthenticationState.User?.Identity?.IsAuthenticated ?? false)
+        {
+            CurrentEmail = AuthenticationState.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value ?? string.Empty;
+        }
+    }
 }

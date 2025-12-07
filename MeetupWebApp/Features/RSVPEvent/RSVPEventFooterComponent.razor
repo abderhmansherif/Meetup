@@ -52,8 +52,6 @@
 
     public AuthenticationState? AuthenticationState;
 
-    // public string RSVPStatus = string.Empty;
-
     public ModelDialogConfimationComponent? ModelDialogConfimation = new();
 
     public string? ErrorMessage = string.Empty;
@@ -70,33 +68,6 @@
         }
 
     }
-
-    // protected override async Task OnAfterRenderAsync(bool firstRender)
-    // {
-    //     RSVPStatus = await RSVPEventService.GetRSVPAttendeeStatusAsync(_Event.Id, Email ?? string.Empty);
-    // }
-
-    // public void UnAttend()
-    // {
-    //     if (AuthenticationState is not null && (AuthenticationState?.User?.Identity?.IsAuthenticated ?? false))
-    //     {
-    //         ModelDialogConfimation?.ShowModel($"Are you sure you want to UnAttend to {_Event.Title}", async () =>
-    //         {
-    //             //UnAttend Here
-    //             var result = await RSVPEventService.UnAttnedRSVPAsync(_Event.Id, Email ?? string.Empty);
-
-    //             if(!result)
-    //             {
-    //                 ErrorMessage = "Can not unattend to this meetup";
-    //             }
-    //         });
-    //         StateHasChanged();
-    //         return;
-    //     }
-
-    //     DialogComp.ShowModel();
-    //     return;
-    // }
 
     public void Attend()
     {
