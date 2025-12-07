@@ -56,9 +56,10 @@
     {
         if (AuthenticationState is not null && (AuthenticationState?.User?.Identity?.IsAuthenticated ?? false))
         {
-            ModelDialogConfimation?.ShowModel($"Are Sure you want to attend {_Event.Title}", () =>
+            ModelDialogConfimation?.ShowModel($"Are Sure you want to attend to {_Event.Title}", () =>
             {
                 // Set Attendee to that Meetup
+
             });
 
             return;

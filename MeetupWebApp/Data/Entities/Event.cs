@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MeetupWebApp.Data.Entities
 {
@@ -32,6 +33,10 @@ namespace MeetupWebApp.Data.Entities
 
         [Required]
         public string ImageUrl { get; set; } =null!;
-        public int OrganizerId { get; set; }
+
+        //public int OrganizerId { get; set; }
+
+        public List<RSVP>? RSVPs { get; set; }
+
     }
 }

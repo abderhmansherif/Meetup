@@ -9,6 +9,21 @@ namespace MeetupWebApp.Data
         { }
 
         public DbSet<Event> Events { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<RSVP> RSVPs { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<RSVP>()
+                   .HasOne(x => x.User)
+                   .WithMany(x => x.RSVPs)
+                   .HasForeignKey(x => x.UserId);
+
+            modelBuilder.Entity<RSVP>()
+                   .HasOne(x => x.Event)
+                   .WithMany(x => x.RSVPs)
+                   .HasForeignKey(x => x.EventId);
+        }
 
     }
 }

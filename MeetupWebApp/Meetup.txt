@@ -247,7 +247,170 @@ and also we can use that method to get the searchword in any page
 
 </code>
 
-==============================---
+==============================
+==> Authentication with google OAuth
+
+so that is called OAuth 
+
+// TODO: Complete first Asp.NetCore Security first
+what is OAuth ?
+
+How the flow ?
+
+we need first to install Authenrication.Google first 
+then adding the clientId and the Client Secret to google be able to determine us
+so what google wiil do is simply take the user to register with his google email 
+then return to the web application the claims 
+then in that case we have the choice if we authenticate the user if cookie then add this claims from google to cookie
+if Jwt token then add this claims to the Jwt token
+
+so first in program.cs adding that configuration 
+
+<Code>
+
+    builder.Services.AddAuthentication( op =>
+    {
+        op.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        op.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+        op.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    })
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? string.Empty;
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? string.Empty;
+        options.Scope.Add("profile");
+        options.Scope.Add("email");
+    });
+
+
+</Code>
+
+so what is that we set the default authentication schema with the cookie becuase we authenticate the user with cookie 
+with google claims 
+what is mean by challenging that means we chellange the user to put his information and that role what google
+authentication what will do for us 
+
+so that is it the configuration and the set up 
+
+so the package once the user login will send the client id and the client secret and the callback url and is the "signin-google"
+here the endpoint is internally in the package will recive the access token and the id token so the middlware internally will get the 
+claims from that access token 
+
+then after of collecting the claims the response will be with enpoint you will recive that claims 
+and then you can basically use cookies or return jwt token what ever you want
+
+so the flow with the code
+
+so let's imaging we have an blazor frontend and web api 
+
+so in front end the user in some url ckicked the button to signin with google so the frontend will navigate to the url in web api and will add return url to return the same page for the user after login 
+
+<code>
+
+    public void AuthWithExternalProvider(string provider)
+    {
+        var returnUrl = NavigationManager.Uri;
+
+        var EncodedUrl = HttpUtility.UrlEncode(returnUrl);
+
+        NavigationManager.NavigateTo($"/Authentication/{provider}?returnurl={EncodedUrl}");
+    }
+
+    so will navigate to the endpoint /Authentication/{provider}  -> provider that is google on our example and add in Qury string the url
+
+
+    so in enpoint that recive that request 
+
+
+    app.MapGet("/Authentication/{provider}", async (HttpContext ctx, string provider) =>
+    {
+        var returnUrl = ctx.Request.Query["returnurl"].ToString();
+
+        var redirectUrl = "signin-callback";
+
+        if(!string.IsNullOrEmpty(returnUrl))
+        {
+            redirectUrl = redirectUrl + $"?returnurl={returnUrl}";
+        }
+
+        var properties = new AuthenticationProperties() { RedirectUri = redirectUrl };
+
+        await ctx.ChallengeAsync(provider, properties);
+    });
+
+</code>
+
+so we get the url
+
+so we in that line  var properties = new AuthenticationProperties() { RedirectUri = redirectUrl };
+
+we configure that after the login and collecting the claims redirect to that url and it is endpoint 
+
+provider is simple string and if Google will simply will be "Google" 
+
+
+so in that line await ctx.ChallengeAsync(provider, properties); // we tell the context take that request to challenge him
+to add his information with that provider (Google) and after login and collectioning the claims redirect to url in properties
+
+
+so once we challenge  await ctx.ChallengeAsync(provider, properties); the package send to google a post request with the client id and the secret id and also the return url ("signin-google") that url 
+will google will send the Access token and the id token and then some internall mideelware will get the data from that access token
+
+and then after all of that the response will be redirected with the endpoint we determine in that line         var properties = new AuthenticationProperties() { RedirectUri = redirectUrl };
+
+
+so to get the claims that middleware extracted from the access token 
+
+<code>
+    
+        // remmeber that we add the retun url to the from in the redirect url in the prev endpoint 
+        // so the redirect url is /signin-callback and have in quey the return url
+
+    app.MapGet("/signin-callback", async (HttpContext ctx) =>
+    {
+        var returnUrl = ctx.Request.Query["returnurl"].ToString();
+
+        var DecodedUrl = HttpUtility.UrlDecode(returnUrl);
+
+        var result = await ctx.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+
+        if(result.Succeeded && result.Principal is not null)
+        {
+            await ctx.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, result.Principal);
+
+            if(!string.IsNullOrEmpty(DecodedUrl))
+                ctx.Response.Redirect(DecodedUrl);
+
+            return;
+        }
+
+        ctx.Response.Redirect("/");
+        // TODO: return ErrorMessage
+        return;
+    });
+
+    // so that in that line   var result = await ctx.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+    we tell that result of the authentication of that schema is successed where the claims 
+    so that contains the status of the authentication and also have the claims that colleced in the internall middelware 
+
+    so you can here get the claism and if web api return the acces token and refresh token or if web application juts create cookei with that claism 
+    and then sign in the claims 
+    and then redirect the current request to the redirect url in the from by that line
+    
+            if(!string.IsNullOrEmpty(DecodedUrl))
+                ctx.Response.Redirect(DecodedUrl);
+
+
+    so notice that we encode and decode the url using HttpUtility
+
+
+
+
+</code>
+
+==================
+
 
 
 

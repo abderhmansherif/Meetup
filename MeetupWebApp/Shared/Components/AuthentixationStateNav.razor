@@ -23,7 +23,7 @@
     }
 </ul>
 
-<DialogComponent @ref="DialogComp" Title="Sign in first to attend.">
+<DialogComponent @ref="DialogComp" Title="Sign in">
 
     <Content>
         <ExternalLoginButtonsComponent></ExternalLoginButtonsComponent>
@@ -34,8 +34,6 @@
 
 @code{
     public AuthenticationState? AuthenticationState;
-
-    public bool IsAuthenticated = false;
 
     public string? UserPicture = string.Empty;
 
