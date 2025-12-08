@@ -1,0 +1,9 @@
+﻿@page "/users/{userId:int}/manage-rsvp-events"
+@attribute [Authorize]
+
+<h3>ManageUserRSVPEventsComponent</h3>
+
+@code {
+    [Parameter]
+    public int userId { get; set; }
+}

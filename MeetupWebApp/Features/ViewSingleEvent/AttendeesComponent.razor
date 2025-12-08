@@ -3,34 +3,31 @@
 @using System.Security.Claims
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<h6>Attendees</h6>
 
 
 @if(Users is not null && Users.Count > 0)
 {
+    <h6>Attendees</h6>
+
     <div class="container">
         <div class="row g-3">
             @foreach (var user in Users)
             {
-                if (!string.IsNullOrEmpty(CurrentEmail) && CurrentEmail == user.Email)
-                {
-                    <div class="col-lg-3 col-md-4 col-sm-6 col-12">
-                        <div class="card border-0">
-                            <p class="card-title fw-bold">@user.Username (you)</p>
-                        </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                    <div class="card border-0">
+                        <p class="card-title fw-bold">
+                            @user.Username @if(CurrentEmail == user.Email){ <span class="badge bg-primary m-1">you</span> }
+                        </p>
                     </div>
-                }
-                else
-                {
-                    <div class="col-lg-3 col-md-4 col-sm-6 col-12">
-                        <div class="card border-0">
-                            <p class="card-title fw-bold">@user.Username</p>
-                        </div>
-                    </div>
-                }
+                </div>
             }
         </div>
     </div>
+}
+else
+{
+    <span class="badge m-1"></span>
+    <h6>Be the First Attendee</h6>
 }
 
 

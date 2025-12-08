@@ -9,6 +9,7 @@ using MeetupWebApp.Features.RSVPEvent;
 using MeetupWebApp.Features.ViewSingleEvent;
 using MeetupWebApp.Shared;
 using MeetupWebApp.Shared.Services;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -17,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
 using System.Security.Claims;
 using System.Web;
+using MeetupWebApp.Shared.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +40,52 @@ builder.Services.AddAuthentication( op =>
         options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? string.Empty;
         options.Scope.Add("profile");
         options.Scope.Add("email");
+        options.Events = new OAuthEvents()
+        {
+            OnTicketReceived = async context =>
+            {
+                if (context.Principal is null || context.Principal.Claims is null)
+                {
+                    // Erorr Here
+                    context.HttpContext.Response.Redirect("/");
+                    context.HandleResponse();
+                }
+
+                var UsernameClaim = context.Principal?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Name);
+                var EmailClaim = context?.Principal?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Email);
+
+                // DbContextFactory
+                var Factory = context.HttpContext.RequestServices.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
+                using var contextDb = Factory.CreateDbContext();
+
+                if (UsernameClaim is null && EmailClaim is null)
+                {
+                    // Adding Error page
+                    return;
+                }
+
+                var userExist = await contextDb.Users.FirstOrDefaultAsync(x => x.Email == EmailClaim!.Value);
+
+                if (userExist is null)
+                {
+                    // that means user is not exists
+                    userExist = new User()
+                    {
+                        Username = UsernameClaim!.Value,
+                        Email = EmailClaim!.Value,
+                        UserRole = SharedHelper.GetAttendeeRole()
+                    };
+
+                    await contextDb.Users.AddAsync(userExist);
+                    await contextDb.SaveChangesAsync();
+                }
+                else
+                {
+                    userExist.Username = UsernameClaim!.Value;
+                    await contextDb.SaveChangesAsync();
+                }
+            },
+        };
     });
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(op =>
@@ -77,90 +125,9 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-app.MapGet("/Authentication/{provider}", async (HttpContext ctx, string provider) =>
-{
-    var returnUrl = ctx.Request.Query["returnurl"].ToString();
+app.UseAuthentication();
+app.UseAuthorization();
 
-    var redirectUrl = "signin-callback";
-
-    if(!string.IsNullOrEmpty(returnUrl))
-    {
-        redirectUrl = redirectUrl + $"?returnurl={returnUrl}";
-    }
-
-    var properties = new AuthenticationProperties() { RedirectUri = redirectUrl };
-
-    await ctx.ChallengeAsync(provider, properties);
-});
-
-app.MapGet("/signin-callback", async (HttpContext ctx) =>
-{
-    var returnUrl = ctx.Request.Query["returnurl"].ToString();
-
-    var DecodedUrl = HttpUtility.UrlDecode(returnUrl);
-
-    var result = await ctx.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
-
-    if(result.Succeeded && result.Principal is not null)
-    {
-        // Store a User
-        var UsernameClaim = result.Principal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name);
-        var EmailClaim = result.Principal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
-
-        // DbContextFactory
-        var Factory = ctx.RequestServices.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
-        using var context = Factory.CreateDbContext();
-
-        if(UsernameClaim is null && EmailClaim is null)
-        {
-            // Adding Error page
-            return;
-        }
-
-        var userExist = await context.Users.FirstOrDefaultAsync(x => x.Email == EmailClaim!.Value);
-
-        if(userExist is null)
-        {
-            // that means user is not exists
-            userExist = new User()
-            {
-                Username = UsernameClaim!.Value,
-                Email = EmailClaim!.Value,
-                UserRole = SharedHelper.GetAttendeeRole()
-            };
-
-            await context.Users.AddAsync(userExist);
-            await context.SaveChangesAsync();
-        }
-        else
-        {
-            userExist.Username = UsernameClaim!.Value;
-            await context.SaveChangesAsync();
-        }
-
-        // Signin the Cookie
-        await ctx.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, result.Principal);
-
-        if(!string.IsNullOrEmpty(DecodedUrl))
-            ctx.Response.Redirect(DecodedUrl);
-
-        return;
-    }
-
-    ctx.Response.Redirect("/");
-    // TODO: return ErrorMessage
-    return;
-});
-
-app.MapGet("logout", async (HttpContext ctx) =>
-{
-    if((ctx.User?.Identity?.IsAuthenticated ?? false))
-    {
-        await ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-    }
-    ctx.Response.Redirect("/");
-    return;
-});
-
+app.MapAuth();
 
 app.Run();

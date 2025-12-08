@@ -409,6 +409,63 @@ so to get the claims that middleware extracted from the access token
 
 </code>
 
+
+the correct flow is simply 
+the defualt behavior is 
+when the user hit accept with his email with google 
+google send a request to the redirect url is by default signin-google and then before the request arrives to to the 
+redirect url or endpoint 
+thtere is OAuth Middleware is like afilter before gets the endpoint it take the authorization code and then make arequest with the authorization code 
+to recive the access token and the Id token and then the middelware gets the user claims from that access token after validate the token 
+and then make the claimsprincipal and put the claims in context.User and Contxt.AuthenticateAsync(Schma)
+so the reuquest arrives to the endpoint with claims is ready 
+so the defualt behavior if the redirect Url is signin-google then the middleware after puting claims then will make cookie with that claims 
+and that is it not store users and the whole stuff so 
+remember the middleware who is that create the cookie not the signin-google
+if you make or define the dericet url will not arrives to signin-google the defualt will arrive to the redirect url you define 
+so example for that is 
+
+before make user get google auth Ui 
+we make that
+
+    var properties = new AuthenticationProperties() { RedirectUri = redirectUrl };
+
+    await ctx.ChallengeAsync(provider, properties);
+
+    and then pass it with the provider 
+        await ctx.ChallengeAsync(provider, properties);
+that means will make arequest with the client id and secret and also the redirect url you define 
+so when the user hits accept or yes google will send auth code to the redirect url 
+and then as we said the middle ware will catch that code first and will make reuqest to get access token wil the auth code 
+after getting the access token will get all claims and put it in Context.User or Context.AuthenticateAsync(Schema)
+
+and then will signin make cookie with that claims
+
+so that is the bhavior of External Authentication with OAuth 
+
+also there is an events that you can define 
+and that events in spicifc sitiuation for exampel 
+theere is an event you can make after the middelware creating the cookie and before making the cookie for example you want to store the user 
+
+for example 
+
+OnRedirectToAuthorizationEndpoint ->
+means before the user arrives to google authentication you wanna add some logic
+
+OnCreatingTicket -> 
+means once the middleware have the token but before extracting the claims
+
+OnTicketReceived -> 
+after etracting the claims but before creating the cookie
+
+OnRemoteFailure -> 
+means when the OAuth failed for some reason Exception Handling 
+
+OnAccessDenied -> 
+i thing it clear 
+
+
+so that simply the OAuth With Google
 ==================
 
 
