@@ -1,4 +1,4 @@
-==> What I Learnt From that project  <==
+﻿==> What I Learnt From that project  <==
 
 => Search and Filering Meetups 
 
@@ -60,16 +60,16 @@ This heavily relies on how the NavigationManager handles URLs and query strings.
 
 How the Flow Works With NavigationManager
 
-When you're on a page like /events and you trigger a search, you might think you need to modify the page�s route to include the query parameter, like:
+When you're on a page like /events and you trigger a search, you might think you need to modify the page’s route to include the query parameter, like:
 
 /events?search={key}
 
 
 Then you might assume:
 
-�Since I'm navigating to /events?search=key, I must update the route definition to match that pattern.�
+“Since I'm navigating to /events?search=key, I must update the route definition to match that pattern.”
 
-But here�s the important part:
+But here’s the important part:
 
 NavigationManager Is Smarter Than That
 
@@ -88,7 +88,7 @@ Blazor will still navigate to:
 
 /events?search=key
 
-and the component will load normally � the query string is simply attached to the URL, not part of the routing pattern.
+and the component will load normally — the query string is simply attached to the URL, not part of the routing pattern.
 
 ---
 so how to use the search bar in layout component and also search 
@@ -466,6 +466,107 @@ i thing it clear
 
 
 so that simply the OAuth With Google
+
+Again
+Google OAuth Flow in ASP.NET Core
+Key Concepts
+
+HttpContext.User is populated from the cookie or token that arrives with the request.
+
+SignInAsync() creates the cookie for future requests, not for the current one.
+
+On the first request (e.g., signin-callback), HttpContext.User is usually null because the cookie hasn’t been sent back by the client yet.
+
+Step-by-Step Flow
+
+User clicks "Sign in with Google"
+
+Your app redirects the user to Google using:
+
+var properties = new AuthenticationProperties() { RedirectUri = "signin-callback" };
+await ctx.ChallengeAsync(GoogleDefaults.AuthenticationScheme, properties);
+
+
+Google Authentication
+
+Google shows the login/consent UI.
+
+User enters credentials and accepts.
+
+Google sends an authorization code to the redirect URL (signin-callback).
+
+Middleware Processing
+
+OAuth middleware intercepts the request before it reaches your endpoint.
+
+Middleware exchanges the authorization code for an access token (and ID token if available).
+
+Middleware extracts claims from the access token.
+
+Middleware creates a ClaimsPrincipal and stores it in context.User temporarily for the current middleware pipeline.
+
+Middleware creates a cookie with these claims for future requests.
+
+Current Request (signin-callback)
+
+At this moment:
+
+The cookie is not yet sent back by the client.
+
+Therefore, HttpContext.User from the request is still null.
+
+To access claims for this request, use the result from:
+
+var result = await ctx.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+var principal = result.Principal;
+
+
+Sign-in / Cookie Creation
+
+If you want, you can explicitly call:
+
+await ctx.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+
+This writes the cookie to the response for the next requests.
+
+Redirect to Original URL
+
+You can then redirect the user to the original page they wanted:
+
+ctx.Response.Redirect(returnUrl ?? "/");
+
+
+Subsequent Requests
+
+On all subsequent requests:
+
+The cookie is sent by the browser.
+
+HttpContext.User is automatically populated from the cookie.
+
+Claims are available for authorization, display, etc.
+
+Events in OAuth
+
+OnRedirectToAuthorizationEndpoint → Before sending the user to Google.
+
+OnCreatingTicket → After getting the access token, but before extracting claims.
+
+OnTicketReceived → After extracting claims, before creating cookie.
+
+OnRemoteFailure → When OAuth fails for any reason.
+
+OnAccessDenied → When the user denies access.
+
+This gives you full control:
+
+You can add custom logic when creating the cookie (OnTicketReceived).
+
+You can log or store users in DB.
+
+You can modify claims before signing in.s
+
 ==================
 
 

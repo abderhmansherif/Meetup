@@ -5,20 +5,21 @@ using MeetupWebApp.Features.Events.CreateEvent;
 using MeetupWebApp.Features.Events.EditEvents;
 using MeetupWebApp.Features.Events.Shared;
 using MeetupWebApp.Features.Events.ViewEvents;
+using MeetupWebApp.Features.ManageUserRSVPEvents;
 using MeetupWebApp.Features.RSVPEvent;
 using MeetupWebApp.Features.ViewSingleEvent;
 using MeetupWebApp.Shared;
+using MeetupWebApp.Shared.Endpoints;
 using MeetupWebApp.Shared.Services;
-using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
 using System.Security.Claims;
 using System.Web;
-using MeetupWebApp.Shared.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,9 @@ builder.Services.AddAuthentication( op =>
         {
             OnTicketReceived = async context =>
             {
+
+                // context.HandleResponse(); //NOTE THAT: To Suppress the default behavior
+
                 if (context.Principal is null || context.Principal.Claims is null)
                 {
                     // Erorr Here
@@ -104,6 +108,7 @@ builder.Services.AddTransient<DiscoverEventsService>();
 builder.Services.AddTransient<ViewSingleEventService>();
 builder.Services.AddSingleton<LayoutService>();
 builder.Services.AddTransient<RSVPEventService>();
+builder.Services.AddTransient<ManageUserRSVPEventsService>();
 builder.Services.AddMudServices();
 
 var app = builder.Build();

@@ -1,9 +1,32 @@
 ﻿@page "/users/{userId:int}/manage-rsvp-events"
 @attribute [Authorize]
+@inject ManageUserRSVPEventsService ManageUserRSVPEventsService
 
 <h3>ManageUserRSVPEventsComponent</h3>
 
 @code {
     [Parameter]
     public int userId { get; set; }
+
+    public List<EventViewModel>? Events { get; set; }
+
+    public List<EventViewModel>? UpcomingEvents { get; set; } = new();
+
+    public List<EventViewModel>? PastEvents { get; set; } = new();
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Events = await ManageUserRSVPEventsService.GetUserRSVPAsync(userId);
+
+        var now = DateTime.Now;
+
+        UpcomingEvents = Events.Where(x => x.BeginDate > DateOnly.FromDateTime(now) || 
+                                    (x.BeginDate == DateOnly.FromDateTime(now) && x.BeginTime > TimeOnly.FromDateTime(now))).ToList();
+    
+
+        PastEvents = Events.Where(x => x.BeginDate < DateOnly.FromDateTime(now) ||
+                                    (x.BeginDate == DateOnly.FromDateTime(now) && x.BeginTime <= TimeOnly.FromDateTime(now))).ToList();
+
+    }
 }
