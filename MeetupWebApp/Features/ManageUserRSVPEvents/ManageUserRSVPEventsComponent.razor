@@ -1,6 +1,7 @@
 ﻿@page "/users/{userId:int}/manage-rsvp-events"
 @attribute [Authorize(policy: "SameUser")]
 @inject ManageUserRSVPEventsService ManageUserRSVPEventsService
+@inherits BaseComponent
 
 <h2>Upcoming Events</h2>
 
@@ -31,7 +32,8 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="text-end">                    
+            <div class="text-end"> 
+                
             </div>
         </div>
     }

@@ -1,15 +1,15 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
 @using System.Security.Claims
-@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inherits BaseComponent
 @rendermode InteractiveServer
 
 <ul class="navbar-nav ms=auto">
-    @if (AuthenticationState is not null && (AuthenticationState.User?.Identity?.IsAuthenticated ?? false))
+    @if (base.IsAuthentdicated)
     {
         
         <li class="nav-item">
-            <a class="nav-link text-light" href="@($"/users/{UserId}/manage-rsvp-events")">Hello, @UserName</a>
+            <a class="nav-link text-light" href="@($"/users/{base.UserId}/manage-rsvp-events")">Hello, @base.Username</a>
 
         </li>
         <li class="nav-item">
@@ -34,38 +34,8 @@
 
 
 @code{
-    public AuthenticationState? AuthenticationState;
-
-    public string? UserPicture = string.Empty;
-
-    public string? Email = string.Empty;
-
-    public string UserName = string.Empty;
-
-    public int UserId { get; set; }
 
     DialogComponent DialogComp = new();
-
-    protected override async Task OnInitializedAsync()
-    {
-        AuthenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-
-        if (AuthenticationState is not null && (AuthenticationState.User?.Identity?.IsAuthenticated ?? false))
-        {
-            UserPicture = AuthenticationState.User?.FindFirst("urn:google:picture")?.Value ?? string.Empty;
-
-            Email = AuthenticationState.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value ?? string.Empty;
-
-            UserName = AuthenticationState.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value ?? string.Empty;
-
-            var UserIdClaim = AuthenticationState.User.Claims.FirstOrDefault(x => x.Type == SharedHelper.GetUserIdClaimType());
-
-            if (UserIdClaim is not null)
-                UserId = int.Parse(UserIdClaim.Value);
-
-        }
-
-    }
 
     public void Login()
     {
