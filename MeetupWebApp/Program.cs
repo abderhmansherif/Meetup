@@ -43,16 +43,13 @@ builder.Services.AddAuthentication( op =>
         options.Scope.Add("email");
         options.Events = new OAuthEvents()
         {
-            OnTicketReceived = async context =>
+            OnCreatingTicket = async context =>
             {
-
-                // context.HandleResponse(); //NOTE THAT: To Suppress the default behavior
-
-                if (context.Principal is null || context.Principal.Claims is null)
+                if (context.Principal is null || context.Principal.Claims is null || context.Identity is null)
                 {
                     // Erorr Here
                     context.HttpContext.Response.Redirect("/");
-                    context.HandleResponse();
+                    return;
                 }
 
                 var UsernameClaim = context.Principal?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Name);
@@ -88,7 +85,11 @@ builder.Services.AddAuthentication( op =>
                     userExist.Username = UsernameClaim!.Value;
                     await contextDb.SaveChangesAsync();
                 }
-            },
+
+                // Adding UserID to calims to be in the cookie 
+                context.Identity.AddClaim(new Claim(SharedHelper.GetUserIdClaimType(), userExist.Id.ToString()));
+
+            },  
         };
     });
 

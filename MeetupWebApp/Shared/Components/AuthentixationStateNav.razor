@@ -7,8 +7,9 @@
 <ul class="navbar-nav ms=auto">
     @if (AuthenticationState is not null && (AuthenticationState.User?.Identity?.IsAuthenticated ?? false))
     {
+        
         <li class="nav-item">
-            <a class="nav-link text-light" href="#">Hello, @UserName</a>
+            <a class="nav-link text-light" href="@($"/users/{UserId}/manage-rsvp-events")">Hello, @UserName</a>
 
         </li>
         <li class="nav-item">
@@ -41,6 +42,8 @@
 
     public string UserName = string.Empty;
 
+    public int UserId { get; set; }
+
     DialogComponent DialogComp = new();
 
     protected override async Task OnInitializedAsync()
@@ -54,6 +57,12 @@
             Email = AuthenticationState.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value ?? string.Empty;
 
             UserName = AuthenticationState.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value ?? string.Empty;
+
+            var UserIdClaim = AuthenticationState.User.Claims.FirstOrDefault(x => x.Type == SharedHelper.GetUserIdClaimType());
+
+            if (UserIdClaim is not null)
+                UserId = int.Parse(UserIdClaim.Value);
+
         }
 
     }

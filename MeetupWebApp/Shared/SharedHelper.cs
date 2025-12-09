@@ -12,6 +12,7 @@ namespace MeetupWebApp.Shared
         public const string ADMINISTRATOR_ROLE = "Admin";
         public const string RSPV_GOING_STATUS = "Going";
         public const string RSPV_NOTGOING_STATUS = "NotGoing";
+        public const string USER_ID_CLAIM_TYPE = "UserId";
 
         public SharedHelper(NavigationManager NavigationManager)
         {
@@ -42,8 +43,7 @@ namespace MeetupWebApp.Shared
         public static string GetAdminRole() => ADMINISTRATOR_ROLE;
         public static string GetRSVPGoingStatus() => RSPV_GOING_STATUS;
         public static string GetRSVPNotGoingStatus() => RSPV_NOTGOING_STATUS;
-
-
+        public static string GetUserIdClaimType() => USER_ID_CLAIM_TYPE;
 
 
     }

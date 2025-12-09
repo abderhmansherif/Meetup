@@ -2,7 +2,90 @@
 @attribute [Authorize]
 @inject ManageUserRSVPEventsService ManageUserRSVPEventsService
 
-<h3>ManageUserRSVPEventsComponent</h3>
+<h2>Upcoming Events</h2>
+
+@if(UpcomingEvents is not null && UpcomingEvents.Count > 0)
+{
+    @foreach (var ev in UpcomingEvents)
+    {
+        var eventImage = ev.ImageUrl;
+        if (string.IsNullOrWhiteSpace(eventImage))
+        {
+            eventImage = "/images/image-placeholder.jpg";
+        }
+        <div class="border p-3 mb-3 d-flex align-items-center">
+            <!-- Image -->
+            <a href="/events/@ev.Id">
+                <div class="me-3">
+                    <img src="@eventImage" alt="Product Image" class="img-thumbnail" 
+                        style="width:120px; height:auto; object-fit: cover;">
+                </div>
+            </a>
+
+            <!-- Details -->
+            <div class="flex-grow-1">
+                <a href="/events/@ev.Id" class="text-decoration-none text-dark">
+                    <h5>@ev.Title</h5>
+                </a>
+                <p class="mt-1 mb-0 text-muted">@($"{ev.BeginDate:ddd MMM d} - {@ev.BeginTime:h:mm tt}".ToUpper())</p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="text-end">                    
+            </div>
+        </div>
+    }
+
+}
+else
+{
+    <h5>There is no Upcoming Events right now</h5>
+}
+
+<hr />
+
+<h2>Past Events</h2>
+
+@if (PastEvents is not null && PastEvents.Count > 0)
+{
+    @foreach (var ev in PastEvents)
+    {
+        var eventImage = ev.ImageUrl;
+        if (string.IsNullOrWhiteSpace(eventImage))
+        {
+            eventImage = "/images/image-placeholder.jpg";
+        }
+        <div class="border p-3 mb-3 d-flex align-items-center">
+            <!-- Image -->
+            <a href="/events/@ev.Id">
+                <div class="me-3">
+                    <img src="@eventImage" alt="Product Image" class="img-thumbnail"
+                         style="width:120px; height:auto; object-fit: cover;">
+                </div>
+            </a>
+
+            <!-- Details -->
+            <div class="flex-grow-1">
+                <a href="/events/@ev.Id" class="text-decoration-none text-dark">
+                    <h5>@ev.Title</h5>
+                </a>
+                <p class="mt-1 mb-0 text-muted">@($"{ev.BeginDate:ddd MMM d} - {@ev.BeginTime:h:mm tt}".ToUpper())</p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="text-end">
+            </div>
+        </div>
+    }
+
+}
+else
+{
+    <h5>There is no Past Events right now</h5>
+}
+
+
+
 
 @code {
     [Parameter]
