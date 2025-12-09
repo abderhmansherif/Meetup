@@ -1,5 +1,5 @@
 ﻿@page "/users/{userId:int}/manage-rsvp-events"
-@attribute [Authorize]
+@attribute [Authorize(policy: "SameUser")]
 @inject ManageUserRSVPEventsService ManageUserRSVPEventsService
 
 <h2>Upcoming Events</h2>

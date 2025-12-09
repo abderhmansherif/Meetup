@@ -9,12 +9,15 @@ using MeetupWebApp.Features.ManageUserRSVPEvents;
 using MeetupWebApp.Features.RSVPEvent;
 using MeetupWebApp.Features.ViewSingleEvent;
 using MeetupWebApp.Shared;
+using MeetupWebApp.Shared.Authentication;
 using MeetupWebApp.Shared.Endpoints;
+using MeetupWebApp.Shared.Policies.SameUserPolicy;
 using MeetupWebApp.Shared.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
@@ -28,13 +31,18 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 
+
+
 builder.Services.AddAuthentication( op =>
 {
     op.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     op.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
     op.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 })
-    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+    {
+        options.AccessDeniedPath = "/AccessDenied";
+    })
     .AddGoogle(options =>
     {
         options.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? string.Empty;
@@ -45,61 +53,29 @@ builder.Services.AddAuthentication( op =>
         {
             OnCreatingTicket = async context =>
             {
-                if (context.Principal is null || context.Principal.Claims is null || context.Identity is null)
-                {
-                    // Erorr Here
-                    context.HttpContext.Response.Redirect("/");
-                    return;
-                }
-
-                var UsernameClaim = context.Principal?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Name);
-                var EmailClaim = context?.Principal?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Email);
-
-                // DbContextFactory
-                var Factory = context.HttpContext.RequestServices.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
-                using var contextDb = Factory.CreateDbContext();
-
-                if (UsernameClaim is null && EmailClaim is null)
-                {
-                    // Adding Error page
-                    return;
-                }
-
-                var userExist = await contextDb.Users.FirstOrDefaultAsync(x => x.Email == EmailClaim!.Value);
-
-                if (userExist is null)
-                {
-                    // that means user is not exists
-                    userExist = new User()
-                    {
-                        Username = UsernameClaim!.Value,
-                        Email = EmailClaim!.Value,
-                        UserRole = SharedHelper.GetAttendeeRole()
-                    };
-
-                    await contextDb.Users.AddAsync(userExist);
-                    await contextDb.SaveChangesAsync();
-                }
-                else
-                {
-                    userExist.Username = UsernameClaim!.Value;
-                    await contextDb.SaveChangesAsync();
-                }
-
-                // Adding UserID to calims to be in the cookie 
-                context.Identity.AddClaim(new Claim(SharedHelper.GetUserIdClaimType(), userExist.Id.ToString()));
-
+                await GoogleOAuthEvents.OnCreatingTicketEventAsync(context);
             },  
         };
     });
+
+builder.Services.AddAuthorization(op =>
+{
+    op.AddPolicy("SameUser", policy =>
+    {
+        policy.AddRequirements(new SameUserRequirement());
+    });
+});
+
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(op =>
 {
     op.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+builder.Services.AddSingleton<IAuthorizationHandler, SameUserHandler>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddTransient<CreateEventService>();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<ViewEventService>();
 builder.Services.AddTransient<SharedHelper>();
 builder.Services.AddTransient<EditEventsService>();
@@ -110,6 +86,7 @@ builder.Services.AddTransient<ViewSingleEventService>();
 builder.Services.AddSingleton<LayoutService>();
 builder.Services.AddTransient<RSVPEventService>();
 builder.Services.AddTransient<ManageUserRSVPEventsService>();
+
 builder.Services.AddMudServices();
 
 var app = builder.Build();
@@ -137,3 +114,7 @@ app.UseAuthorization();
 app.MapAuth();
 
 app.Run();
+
+
+
+

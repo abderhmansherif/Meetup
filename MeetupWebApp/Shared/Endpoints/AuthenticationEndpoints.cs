@@ -55,11 +55,23 @@ namespace MeetupWebApp.Shared.Endpoints
                 return;
             });
 
-            app.MapGet("logout", async (HttpContext ctx) =>
+            app.MapGet("/logout", async (HttpContext ctx) =>
             {
+                var EncodedUrl = ctx.Request.Query["redirecturl"];
+                var redirectUrl = string.Empty;
+
+                if (!string.IsNullOrEmpty(EncodedUrl))
+                    redirectUrl = HttpUtility.UrlDecode(EncodedUrl);
+
+
                 if ((ctx.User?.Identity?.IsAuthenticated ?? false))
                 {
                     await ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+                    if (!string.IsNullOrEmpty(redirectUrl))
+                        ctx.Response.Redirect(redirectUrl);
+
+                    return;
                 }
                 ctx.Response.Redirect("/");
                 return;
