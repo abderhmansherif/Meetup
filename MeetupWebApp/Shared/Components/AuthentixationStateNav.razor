@@ -1,4 +1,5 @@
-﻿@using Microsoft.AspNetCore.Components.Authorization
+﻿@using MeetupWebApp.Features.BeAnOrganizer
+@using Microsoft.AspNetCore.Components.Authorization
 @using System.Security.Claims
 @inject NavigationManager NavigationManager
 @inherits BaseComponent
@@ -7,7 +8,8 @@
 <ul class="navbar-nav ms=auto">
     @if (base.IsAuthentdicated)
     {
-        
+        <BeAnOrganizerComponent></BeAnOrganizerComponent>
+
         <li class="nav-item">
             <a class="nav-link text-light" href="@($"/users/{base.UserId}/manage-rsvp-events")">Hello, @base.Username</a>
 
@@ -15,9 +17,12 @@
         <li class="nav-item">
             <a class="nav-link text-light btn btn-link" @onclick="Logout">Logout</a>
         </li>
+
+        
     }
     else
     {
+        <BeAnOrganizerComponent></BeAnOrganizerComponent>
         <li class="nav-item">
             <a class="nav-link text-light btn btn-link" @onclick="Login">Login</a>
         </li>
@@ -27,7 +32,7 @@
 <DialogComponent @ref="DialogComp" Title="Sign in">
 
     <Content>
-        <ExternalLoginButtonsComponent></ExternalLoginButtonsComponent>
+        <ExternalLoginButtonsComponent BeOrganizer="false"></ExternalLoginButtonsComponent>
     </Content>
 </DialogComponent>
 

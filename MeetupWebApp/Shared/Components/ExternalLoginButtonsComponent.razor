@@ -39,6 +39,9 @@
 
     public AuthenticationState? AuthenticationState;
 
+    [Parameter]
+    public bool BeOrganizer { get; set; } = false;
+
     protected override async Task OnInitializedAsync()
     {
         Providers = await AuthenticationSchemeProvider.GetAllSchemesAsync();
@@ -49,11 +52,17 @@
 
     public void AuthWithExternalProvider(string provider)
     {
-        var returnUrl = NavigationManager.Uri;
+        var Url = NavigationManager.Uri.ToString();
+        var EncodedUrl = HttpUtility.UrlEncode(Url);
 
-        var EncodedUrl = HttpUtility.UrlEncode(returnUrl);
-
-        NavigationManager.NavigateTo($"/Authentication/{provider}?returnurl={EncodedUrl}");
+        if (BeOrganizer)
+        {
+            NavigationManager.NavigateTo($"/Authentication/{provider}/BeOrganizer?returnurl={EncodedUrl}", true);
+        }
+        else
+        {
+            NavigationManager.NavigateTo($"/Authentication/{provider}?returnurl={EncodedUrl}");
+        }
     }
     
 }

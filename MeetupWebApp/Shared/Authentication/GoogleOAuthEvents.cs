@@ -32,6 +32,23 @@ namespace MeetupWebApp.Shared.Authentication
 
             var userExist = await contextDb.Users.FirstOrDefaultAsync(x => x.Email == EmailClaim!.Value);
 
+            // Set the Default role is Attendee
+            var DesireRole = SharedHelper.GetAttendeeRole();
+
+            // if there is an desire role in Authentication properties that passed by the Auth Endpoint
+            // then we would change the desire role to that role 
+            if(context.Properties.Items.TryGetValue("role", out string? role))
+            {
+                // Ensuring that the role is organizer not nothing else
+                if (!string.IsNullOrEmpty(role) && role.Contains(SharedHelper.GetOrganizerRole()))
+                {
+                    DesireRole = role;
+                }
+            }
+
+            // Hanlde If the user is actaully Organizer and just log in 
+            //Ensure not be log in as a attendee
+
             if (userExist is null)
             {
                 // that means user is not exists
@@ -39,7 +56,7 @@ namespace MeetupWebApp.Shared.Authentication
                 {
                     Username = UsernameClaim!.Value,
                     Email = EmailClaim!.Value,
-                    UserRole = SharedHelper.GetAttendeeRole()
+                    UserRole = DesireRole,
                 };
 
                 await contextDb.Users.AddAsync(userExist);
@@ -48,11 +65,19 @@ namespace MeetupWebApp.Shared.Authentication
             else
             {
                 userExist.Username = UsernameClaim!.Value;
+
+                // Ensure that if once the user is an organizer and set the user role with Attendee role 
+                // to be still organizer
+                if(!(userExist.UserRole == SharedHelper.GetOrganizerRole()))
+                {
+                    userExist.UserRole = DesireRole;
+                }
                 await contextDb.SaveChangesAsync();
             }
 
             // Adding UserID to calims to be in the cookie 
             context.Identity.AddClaim(new Claim(SharedHelper.GetUserIdClaimType(), userExist.Id.ToString()));
+            context.Identity.AddClaim(new("UserRole", userExist.UserRole));
 
         }
     }

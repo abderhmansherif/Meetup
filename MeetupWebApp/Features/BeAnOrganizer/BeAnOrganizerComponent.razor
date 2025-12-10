@@ -1,0 +1,57 @@
+﻿@inherits BaseComponent
+@inject NavigationManager NavigationManager
+
+
+@if(base.IsOrganizer)
+{
+    <ul class="navbar-nav ms=auto me-4">
+        <li class="nav-item">
+            <a class="nav-link text-light btn btn-primary" @onclick="YourMeetups">Your Meetups</a>
+        </li>
+    </ul>
+}
+else
+{
+    <ul class="navbar-nav ms=auto me-4">
+        <li class="nav-item">
+            <a class="nav-link text-light btn btn-primary" @onclick="BecomeOrganizer">Become an Organizer</a>
+        </li>
+    </ul>
+}
+
+
+
+<DialogComponent @ref="DialogComp" Title="Login First">
+
+    <Content>
+        <ExternalLoginButtonsComponent BeOrganizer="true"></ExternalLoginButtonsComponent>
+    </Content>
+</DialogComponent>
+
+
+@code {
+
+    public DialogComponent DialogComp = new();
+
+    public void BecomeOrganizer()
+    {
+        if(base.IsAuthentdicated)
+        {
+            // Just Change the Role only
+            var Url = NavigationManager.Uri.ToString();
+            var Encoded = HttpUtility.UrlEncode(Url);
+
+            NavigationManager.NavigateTo($"/BeOrganizer/{base.UserId}?returnurl={Encoded}", true);
+        }
+        else
+        {
+            
+            DialogComp.ShowModel();
+        }
+    }
+
+    public void YourMeetups()
+    {
+        // Another Time later
+    }
+}

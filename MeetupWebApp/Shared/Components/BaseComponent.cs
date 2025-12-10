@@ -76,5 +76,29 @@ namespace MeetupWebApp.Shared.Components
             }
         }
 
+        public string UserRole
+        {
+            get
+            {
+                if (IsAuthentdicated)
+                {
+                    return (AuthenticationState?.User?.Claims?.FirstOrDefault(x => x.Type == SharedHelper.GetUserRoleClaimType())?.Value ?? string.Empty);
+                }
+                return string.Empty;
+            }
+        }
+
+        public bool IsOrganizer
+        {
+            get
+            {
+                if(IsAuthentdicated && UserRole == SharedHelper.GetOrganizerRole())
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
     }
 }
