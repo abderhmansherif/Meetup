@@ -1,5 +1,4 @@
 using MeetupWebApp.Data;
-using MeetupWebApp.Data.Entities;
 using MeetupWebApp.Features.DeleteEvent;
 using MeetupWebApp.Features.Events.CreateEvent;
 using MeetupWebApp.Features.Events.EditEvents;
@@ -13,16 +12,13 @@ using MeetupWebApp.Shared.Authentication;
 using MeetupWebApp.Shared.Endpoints;
 using MeetupWebApp.Shared.Policies.SameUserPolicy;
 using MeetupWebApp.Shared.Services;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
-using System.Security.Claims;
-using System.Web;
+
 
 var builder = WebApplication.CreateBuilder(args);
 

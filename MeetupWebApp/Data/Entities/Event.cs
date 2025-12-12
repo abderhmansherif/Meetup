@@ -37,6 +37,7 @@ namespace MeetupWebApp.Data.Entities
         //public int OrganizerId { get; set; }
 
         public List<RSVP>? RSVPs { get; set; }
+        public List<Comment>? Comments { get; set; }
 
     }
 }

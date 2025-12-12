@@ -11,6 +11,7 @@ namespace MeetupWebApp.Data
         public DbSet<Event> Events { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<RSVP> RSVPs { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,6 +24,12 @@ namespace MeetupWebApp.Data
                    .HasOne(x => x.Event)
                    .WithMany(x => x.RSVPs)
                    .HasForeignKey(x => x.EventId);
+
+            modelBuilder.Entity<Comment>()
+                .HasOne(x => x.Event)
+                .WithMany(x => x.Comments)
+                .HasForeignKey(x => x.EventId)
+                .IsRequired(true);
         }
 
     }
