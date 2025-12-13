@@ -8,6 +8,8 @@
 @inject EventValidationService EventValidationService
 @using MeetupWebApp.Features.Events.Shared
 @inherits BaseComponent
+@attribute [Authorize]
+
 
 <PageTitle>New Meetup</PageTitle>
 
@@ -52,6 +54,9 @@
 
         if (string.IsNullOrEmpty(ErrorMessage))
         {
+            _eventViewModel.OrganizerId = int.Parse(base.UserId);
+
+
             // Save Meetup
             await CreateEventService.CraeteEventAsync(_eventViewModel);
 

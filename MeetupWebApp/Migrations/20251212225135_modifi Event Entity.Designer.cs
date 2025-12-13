@@ -4,6 +4,7 @@ using MeetupWebApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MeetupWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251212225135_modifi Event Entity")]
+    partial class modifiEventEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,8 +111,7 @@ namespace MeetupWebApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrganizerId")
-                        .IsUnique();
+                    b.HasIndex("OrganizerId");
 
                     b.ToTable("Events");
                 });
@@ -191,9 +193,9 @@ namespace MeetupWebApp.Migrations
             modelBuilder.Entity("MeetupWebApp.Data.Entities.Event", b =>
                 {
                     b.HasOne("MeetupWebApp.Data.Entities.User", "User")
-                        .WithOne("Event")
-                        .HasForeignKey("MeetupWebApp.Data.Entities.Event", "OrganizerId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .WithMany()
+                        .HasForeignKey("OrganizerId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -228,8 +230,6 @@ namespace MeetupWebApp.Migrations
             modelBuilder.Entity("MeetupWebApp.Data.Entities.User", b =>
                 {
                     b.Navigation("Comments");
-
-                    b.Navigation("Event");
 
                     b.Navigation("RSVPs");
                 });

@@ -30,6 +30,18 @@ namespace MeetupWebApp.Data
                 .WithMany(x => x.Comments)
                 .HasForeignKey(x => x.EventId)
                 .IsRequired(true);
+
+            modelBuilder.Entity<Comment>()
+                .HasOne(x => x.User)
+                .WithMany(x => x.Comments)
+                .HasForeignKey(x => x.UserId)
+                .IsRequired(false);
+
+            modelBuilder.Entity<Event>()
+                .HasOne(x => x.User)
+                .WithOne(x => x.Event)
+                .OnDelete(DeleteBehavior.NoAction);
+
         }
 
     }

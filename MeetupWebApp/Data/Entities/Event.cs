@@ -32,10 +32,11 @@ namespace MeetupWebApp.Data.Entities
         public string? EventLink { get; set; }
 
         [Required]
-        public string ImageUrl { get; set; } =null!;
+        public string ImageUrl { get; set; } = null!;
+        public int OrganizerId { get; set; }
 
-        //public int OrganizerId { get; set; }
-
+        [ForeignKey("OrganizerId")]
+        public User? User { get; set; }
         public List<RSVP>? RSVPs { get; set; }
         public List<Comment>? Comments { get; set; }
 

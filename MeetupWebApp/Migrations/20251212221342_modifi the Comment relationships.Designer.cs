@@ -4,6 +4,7 @@ using MeetupWebApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MeetupWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251212221342_modifi the Comment relationships")]
+    partial class modifitheCommentrelationships
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,10 +46,6 @@ namespace MeetupWebApp.Migrations
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -98,18 +97,12 @@ namespace MeetupWebApp.Migrations
                     b.Property<string>("Location")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("OrganizerId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OrganizerId")
-                        .IsUnique();
 
                     b.ToTable("Events");
                 });
@@ -188,17 +181,6 @@ namespace MeetupWebApp.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("MeetupWebApp.Data.Entities.Event", b =>
-                {
-                    b.HasOne("MeetupWebApp.Data.Entities.User", "User")
-                        .WithOne("Event")
-                        .HasForeignKey("MeetupWebApp.Data.Entities.Event", "OrganizerId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("MeetupWebApp.Data.Entities.RSVP", b =>
                 {
                     b.HasOne("MeetupWebApp.Data.Entities.Event", "Event")
@@ -228,8 +210,6 @@ namespace MeetupWebApp.Migrations
             modelBuilder.Entity("MeetupWebApp.Data.Entities.User", b =>
                 {
                     b.Navigation("Comments");
-
-                    b.Navigation("Event");
 
                     b.Navigation("RSVPs");
                 });

@@ -1,8 +1,41 @@
-﻿
+﻿@inject LeaveACommentService LeaveACommentService
+@inherits BaseComponent
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
-@if(_Event is not null)
+@if (base.IsAuthentdicated)
 {
-    
+    <div class="container mt-4">
+        <h8>Leave a comment</h8>
+        <ErrorMessageComponent ErrorMessage="@ErrorMessage"></ErrorMessageComponent>
+        <div class="card p-3">
+            <div class="mb-3">
+                <label for="comment" class="form-label">Your Comment</label>
+                <textarea class="form-control" id="comment" rows="5" @onkeypress="HandleKeyPress" @bind="newComment.Message"></textarea>
+            </div>
+            <button class="btn btn-primary" @onclick="SubmitComment">Submit</button>
+        </div>
+    </div>
+}
+<br />
+
+@if (Comments is not null && Comments.Count > 0)
+{
+    <h6>Comments</h6>
+    <div class="container mt-4">
+
+        @foreach (var comment in Comments)
+        {
+            <div class="card mb-3" @key="comment.Id">
+                <div class="card-body">
+                    <p class="card-title">@comment.Username</p>
+                    <p class="card-subtitle text-muted">@comment.PostedOn.ToString("g")</p>
+                    <p class="card-text">@comment.Message</p>
+                </div>
+            </div>
+        }
+
+    </div>
 }
 
 
@@ -11,7 +44,69 @@
 
 @code {
     [Parameter]
-    public EventViewModel? _Event { get; set; }
+    public EventViewModel _Event { get; set; } = null!;
+
+    public List<CommentViewModel>? Comments = new();
+
+    public CommentViewModel newComment = new();
+
+    public string ErrorMessage = string.Empty;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_Event is not null)
+        {
+            Comments = await LeaveACommentService.GetCommentsByEventIdAsync(_Event.Id);
+            
+        }
+    }
+
+    public async Task SubmitComment()
+    {
+        if (_Event is null)
+        {
+            ErrorMessage = "Event not loaded.";
+            return;
+        }
+
+        if (!int.TryParse(base.UserId, out int userId))
+        {
+            ErrorMessage = "Invalid user.";
+            return;
+        }
+
+        ErrorMessage = LeaveACommentService.ValidateComment(newComment);
+
+        if(!string.IsNullOrEmpty(ErrorMessage))
+        {
+            return;
+        }
+
+        newComment.Username = 
+                base.Username + " " + (userId.Equals(_Event?.OrganizerId) ? "(Organizer)" : string.Empty);
+
+        newComment.UserId = userId;
+        newComment.EventId = _Event.Id;
+        newComment.PostedOn = DateTime.Now;
+
+        await ValidatedSubmitComment();
+
+    }
+
+    public async Task ValidatedSubmitComment()
+    {
+        await LeaveACommentService.AddCommentAsync(newComment);
+        newComment = new CommentViewModel();
+        StateHasChanged();
+    }
+
+    public async Task HandleKeyPress(KeyboardEventArgs keyboardEventArgs)
+    {
+        if (keyboardEventArgs.Key == "Enter" && keyboardEventArgs.CtrlKey)
+        {
+            await SubmitComment();
+        }  
+    }
 
 
 }

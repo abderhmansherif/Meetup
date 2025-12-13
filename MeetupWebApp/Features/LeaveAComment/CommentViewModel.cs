@@ -1,20 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MeetupWebApp.Data.Entities
+namespace MeetupWebApp.Features.LeaveAComment
 {
-    public class Comment
+    public class CommentViewModel
     {
         public int Id { get; set; }
-
         [Required]
         [StringLength(1000)]
         public string Message { get; set; } = null!;
-        public DateTime PostedOn { get; set; } = DateTime.Now;
         [Required]
         public string Username { get; set; } = null!;
+        public DateTime PostedOn { get; set; }
         public int EventId { get; set; }
-        public Event? Event { get; set; }
-        public int UserId { get; set; }
-        public User? User { get; set; }
+        public int UserId {  get; set; }
     }
 }

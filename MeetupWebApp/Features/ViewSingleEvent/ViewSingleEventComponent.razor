@@ -1,5 +1,6 @@
 ﻿@page "/events/{id:int}"
 @using MeetupWebApp.Data.Entities
+@using MeetupWebApp.Features.LeaveAComment
 @using MeetupWebApp.Features.RSVPEvent
 @inject ViewSingleEventService viewSingleEventService
 @inject LayoutService layoutService
@@ -24,6 +25,8 @@
         <hr />
 
         <AttendeesComponent Users="Users"></AttendeesComponent>
+        <br />
+        <LeaveACommentComponent _Event="eventViewModel"></LeaveACommentComponent>
 
     </div>
 }

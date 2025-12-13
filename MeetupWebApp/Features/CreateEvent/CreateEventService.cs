@@ -26,6 +26,7 @@ namespace MeetupWebApp.Features.Events.CreateEvent
 
             using (var context = await _factory.CreateDbContextAsync())
             {
+
                 var Event = _mapper.Map<Event>(eventViewModel);
 
                 context.Events?.Add(Event);

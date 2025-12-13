@@ -18,5 +18,9 @@ namespace MeetupWebApp.Data.Entities
         public string? UserRole { get; set; }
 
         public List<RSVP>? RSVPs { get; set; }
+        public List<Comment>? Comments { get; set; }
+
+        // if the user is organizer
+        public Event? Event { get; set; }
     }
 }

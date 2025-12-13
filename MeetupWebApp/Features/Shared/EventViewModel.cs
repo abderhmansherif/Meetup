@@ -27,6 +27,7 @@ namespace MeetupWebApp.Features.Events.Shared
 
         [Range(0, int.MaxValue)]
         public int Capacity {  get; set; }
+        public int OrganizerId { get; set; }
         public string? Location { get; set; }
         public string? EventLink {  get; set; }
         public IBrowserFile ImageFile { get; set; }
