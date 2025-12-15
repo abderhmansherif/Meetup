@@ -18,6 +18,7 @@ namespace MeetupWebApp.Shared.Components
         public AuthenticationState? AuthenticationState;
 
         public bool IsAuthenticated = false;
+
         public void ClearContent(bool decision = false) => ShouldClearContent = false;
 
         protected override async Task OnInitializedAsync()
@@ -31,6 +32,8 @@ namespace MeetupWebApp.Shared.Components
 
             IsAuthenticated = AuthenticationState.User?.Identity?.IsAuthenticated ?? false;
         }
+
+        public void SaveAttendFooter() => ShouldClearContent = false;
 
         public bool IsAuthentdicated
         {

@@ -3,22 +3,6 @@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-@if (base.IsAuthentdicated)
-{
-    <div class="container mt-4">
-        <h8>Leave a comment</h8>
-        <ErrorMessageComponent ErrorMessage="@ErrorMessage"></ErrorMessageComponent>
-        <div class="card p-3">
-            <div class="mb-3">
-                <label for="comment" class="form-label">Your Comment</label>
-                <textarea class="form-control" id="comment" rows="5" @onkeypress="HandleKeyPress" @bind="newComment.Message"></textarea>
-            </div>
-            <button class="btn btn-primary" @onclick="SubmitComment">Submit</button>
-        </div>
-    </div>
-}
-<br />
-
 @if (Comments is not null && Comments.Count > 0)
 {
     <h6>Comments</h6>
@@ -38,6 +22,23 @@
     </div>
 }
 
+<br />
+
+@if (base.IsAuthentdicated)
+{
+    <div class="container mt-4">
+        <h8>Leave a comment</h8>
+        <ErrorMessageComponent ErrorMessage="@ErrorMessage"></ErrorMessageComponent>
+        <div class="card p-3">
+            <div class="mb-3">
+                <label for="comment" class="form-label">Your Comment</label>
+                <textarea class="form-control" id="comment" rows="5" @onkeypress="HandleKeyPress" @bind:event="oninput" @bind="newComment.Message"></textarea>
+            </div>
+            <button class="btn btn-primary" @onclick="SubmitComment">Submit</button>
+        </div>
+    </div>
+}
+
 
 
 
@@ -52,13 +53,23 @@
 
     public string ErrorMessage = string.Empty;
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnInitialized()
+    {
+        base.SaveAttendFooter();
+    }
+
+    public async Task LoadCommentsAsync()
     {
         if (_Event is not null)
         {
             Comments = await LeaveACommentService.GetCommentsByEventIdAsync(_Event.Id);
-            
+
         }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadCommentsAsync();
     }
 
     public async Task SubmitComment()
@@ -97,7 +108,8 @@
     {
         await LeaveACommentService.AddCommentAsync(newComment);
         newComment = new CommentViewModel();
-        StateHasChanged();
+        await LoadCommentsAsync(); 
+        //StateHasChanged();
     }
 
     public async Task HandleKeyPress(KeyboardEventArgs keyboardEventArgs)
