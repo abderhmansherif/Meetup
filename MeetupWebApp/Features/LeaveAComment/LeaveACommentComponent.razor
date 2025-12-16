@@ -109,7 +109,6 @@
         await LeaveACommentService.AddCommentAsync(newComment);
         newComment = new CommentViewModel();
         await LoadCommentsAsync(); 
-        //StateHasChanged();
     }
 
     public async Task HandleKeyPress(KeyboardEventArgs keyboardEventArgs)

@@ -93,6 +93,27 @@
             }
 
             <div class="mb-3">
+                    <label for="MeetupLink" class="form-label">Meetup Link
+                        <InputCheckbox @bind-value="EventViewModel.HasCost" id="HasCost" class="form-control" />
+                        This Event Cost Money ?
+                    </label>
+            </div>
+
+            @if(EventViewModel.HasCost)
+            {
+                <div class="mb-3">
+                    <label for="TicketPrice" class="form-label">Cover Ticket Price</label>
+                    <InputNumber @bind-Value="EventViewModel.TicketPrice" id="TicketPrice" class="form-control" />
+                    <ValidationMessage For="() => EventViewModel.TicketPrice" />
+                </div>
+                <div class="mb-3">
+                    <label for="Refundable" class="form-label">Refundable?</label>
+                    <InputCheckbox @bind-Value="EventViewModel.Refundable" id="Refundable" class="form-control"   />
+                    <ValidationMessage For="() => EventViewModel.Refundable" />
+                </div>
+            }
+
+            <div class="mb-3">
                 <label for="coverimage" class="form-label">Cover Image</label>
                     <InputFile id="coverimage" class="form-control" accept=".png,.jpg,.jpeg,.webp,.avi" OnChange="HandleImageUpload" />
                 <ValidationMessage For="() => EventViewModel.ImageFile" />

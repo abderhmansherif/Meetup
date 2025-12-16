@@ -30,6 +30,13 @@ namespace MeetupWebApp.Features.Events.Shared
         public int OrganizerId { get; set; }
         public string? Location { get; set; }
         public string? EventLink {  get; set; }
+
+        public bool HasCost { get; set; } = false;
+
+
+        [Range(0, double.MaxValue)]
+        public decimal? TicketPrice { get; set; }
+        public bool Refundable { get; set; } = false;
         public IBrowserFile ImageFile { get; set; }
         public string? ImageUrl { get; set; }
 
