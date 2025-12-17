@@ -5,7 +5,7 @@
 
 
 
-@if(Users is not null && Users.Count > 0)
+@if (Users is not null && Users.Count > 0)
 {
     <h6>Attendees</h6>
 
@@ -16,13 +16,15 @@
                 <div class="col-lg-3 col-md-4 col-sm-6 col-12">
                     <div class="card border-0">
                         <p class="card-title fw-bold">
-                            @user.Username @if(CurrentEmail == user.Email){ <span class="badge bg-primary m-1">you</span> }
-                        </p>
-                    </div>
+                            @user.Username @if(CurrentEmail == user.Email){
+                            <span class="badge bg-primary m-1">you</span>
+                        }
+                    </p>
                 </div>
-            }
-        </div>
+            </div>
+        }
     </div>
+</div>
 }
 else
 {

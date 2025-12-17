@@ -1,4 +1,4 @@
-using MeetupWebApp.Data;
+﻿using MeetupWebApp.Data;
 using MeetupWebApp.Features.DeleteEvent;
 using MeetupWebApp.Features.Events.CreateEvent;
 using MeetupWebApp.Features.Events.EditEvents;
@@ -27,6 +27,23 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Logging.AddConsole();
+builder.Logging.SetMinimumLevel(LogLevel.Debug);
+
+
+builder.Services.AddServerSideBlazor()
+    .AddCircuitOptions(options =>
+    {
+        options.DetailedErrors = true; 
+        options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(1); 
+    });
+
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.SetMinimumLevel(LogLevel.Debug);
+builder.Logging.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Debug);
+builder.Logging.AddFilter("Microsoft.AspNetCore.Components", LogLevel.Debug);
 
 
 
@@ -97,11 +114,12 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
 }
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAntiforgery();
+
+app.UseHttpsRedirection();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

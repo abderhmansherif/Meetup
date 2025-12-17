@@ -6,7 +6,7 @@
 @inject LayoutService layoutService
 @rendermode InteractiveServer
 
-@if(eventViewModel is not null)
+@if (eventViewModel is not null)
 {
     <div style="padding-bottom: 80px">
         <h2>@eventViewModel.Title</h2>
@@ -17,17 +17,16 @@
         </p>
         <br />
 
-        <h6 class="display-6 fw-bold">Details</h6>
+        <h6>Details</h6>
 
-        <pre style="white-space: pre-wrap; word-wrap: break-word" class="lead ">
-            @eventViewModel.Description
-        </pre>
+        <pre style="white-space: pre-wrap; word-wrap: break-word">
+                @eventViewModel.Description
+            </pre>
         <hr />
 
         <AttendeesComponent Users="Users"></AttendeesComponent>
         <br />
         <LeaveACommentComponent _Event="eventViewModel"></LeaveACommentComponent>
-
     </div>
 }
 else

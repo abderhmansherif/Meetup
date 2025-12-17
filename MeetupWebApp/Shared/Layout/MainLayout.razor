@@ -1,5 +1,5 @@
-﻿@inherits LayoutComponentBase 
-@implements IDisposable 
+﻿@inherits LayoutComponentBase
+@implements IDisposable
 @inject LayoutService LayoutService
 
 
@@ -13,13 +13,13 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                <SearchBarComponent></SearchBarComponent> 
+                <SearchBarComponent></SearchBarComponent>
             </ul>
 
-            
+
 
             <ul class="navbar-nav ms-auto mb-2 mb-md-0">
-                <AuthentixationStateNav></AuthentixationStateNav> 
+                <AuthentixationStateNav></AuthentixationStateNav>
             </ul>
         </div>
     </div>
@@ -64,5 +64,5 @@
         LayoutService.OnViewEvent -= UpdateLayoutSection;
     }
 
-  
+
 }

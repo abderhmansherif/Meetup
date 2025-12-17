@@ -26,9 +26,9 @@ namespace MeetupWebApp.Features.ViewSingleEvent
 
                 if (Event is not null)
                 {
-                    return Mapper.Map<EventViewModel>(Event);                                                                                                          
+                    return Mapper.Map<EventViewModel>(Event);
                 }
-                return new EventViewModel();    
+                return new EventViewModel();
             }
         }
 
@@ -45,7 +45,7 @@ namespace MeetupWebApp.Features.ViewSingleEvent
                                          Email = x.User.Email,
                                      })
                                      .ToListAsync();
-            
+
             return users;
         }
 
