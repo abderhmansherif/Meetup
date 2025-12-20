@@ -2,6 +2,7 @@
 using MeetupWebApp.Data.Entities;
 using MeetupWebApp.Shared;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace MeetupWebApp.Features.RSVPEvent
 {
@@ -62,12 +63,12 @@ namespace MeetupWebApp.Features.RSVPEvent
             return true;
         }
 
-        public async Task<bool> AddRSVPEventAsync(int EventId, string Email)
+        public async Task<bool> CanRSVP(int eventId, string email)
         {
             using var context = Factory.CreateDbContext();
 
-            var EventExist = await context.Events.FirstOrDefaultAsync(x => x.Id == EventId);
-            var UserExist = await context.Users.FirstOrDefaultAsync(x => x.Email == Email);
+            var EventExist = await context.Events.FirstOrDefaultAsync(x => x.Id == eventId);
+            var UserExist = await context.Users.FirstOrDefaultAsync(x => x.Email == email);
 
             if (EventExist == null)
             {
@@ -79,9 +80,28 @@ namespace MeetupWebApp.Features.RSVPEvent
                 return false;
             }
 
-            var RSVPExist = await context.RSVPs.FirstOrDefaultAsync(x => x.UserId == UserExist.Id && x.EventId == EventId);
+            var RSVPExist = await context.RSVPs.FirstOrDefaultAsync(x => x.UserId == UserExist.Id && x.EventId == EventExist.Id);
 
-            if(RSVPExist is null)
+            if (RSVPExist is not null)
+                return false;
+
+            return true;
+        }
+
+        public async Task<bool> AddRSVPEventAsync(int EventId, string Email)
+        {
+            if(!await CanRSVP(EventId, Email))
+            {
+                return false;
+            }
+
+            using var context = Factory.CreateDbContext();
+
+            var UserExist = await context.Users.FirstOrDefaultAsync(x => x.Email == Email);
+
+            var RSVPExist = await context.RSVPs.Include(x => x.Event).Include(x => x.User).FirstOrDefaultAsync(x => x.User.Email == Email && x.Event.Id == EventId);
+
+            if (RSVPExist is null)
             {
                 RSVPExist = new RSVP()
                 {

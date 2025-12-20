@@ -12,6 +12,7 @@ namespace MeetupWebApp.Data
         public DbSet<User> Users { get; set; }
         public DbSet<RSVP> RSVPs { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,6 +42,21 @@ namespace MeetupWebApp.Data
                 .HasOne(x => x.User)
                 .WithOne(x => x.Event)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Transaction>()
+                .HasOne(x => x.User)
+                .WithMany(x => x.Transactions)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired(true);
+
+            modelBuilder.Entity<Transaction>()
+                .HasOne(x => x.RASVP)
+                .WithMany(x => x.Transactions)
+                .HasForeignKey(x => x.RASVPId)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired(true);
+
 
         }
 

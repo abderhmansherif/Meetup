@@ -2,8 +2,7 @@
 @inject NavigationManager NavigationManager
 @inherits BaseComponent
 
-
-<button class="@ClassName" type="button" @onclick="ShowModelDialog">Delete</button>
+<button type="button" class="@ClassName" @onclick="ShowModelDialog"><text>Delete</text></button>
 
 <br />
 <br />
@@ -27,7 +26,7 @@
 
     [Parameter]
 
-    public string ClassName { get; set; } = string.Empty;
+    public string ClassName { get; set; } = "btn btn-danger";
 
     private string ErrorMessage = string.Empty;
 

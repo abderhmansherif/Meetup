@@ -1,0 +1,50 @@
+﻿@page "/make-payment/{eventId:int}"
+@inject MakePaymentService MakePaymentService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<h3>Make a Payment</h3>
+
+@if(eventViewModel is not null)
+{
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h6>Payment</h6>
+        </div>
+        <div class="card-body">
+            <p><strong>Event:</strong> @eventViewModel?.Title - @($"{eventViewModel?.BeginDate:ddd MMM d} - {@eventViewModel?.BeginTime:h:mm tt}".ToUpper())</p>
+            <p><strong>Price:</strong> @eventViewModel?.TicketPrice?.ToString("c")</p>
+
+            <button class="btn btn-success" @onclick="StartCheckout">Make Payment</button>
+        </div>
+
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public int eventId { get; set; }
+
+    public EventViewModel? eventViewModel { get; set; }
+
+    public string checkoutUrl { get; set; } = string.Empty;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        eventViewModel = await MakePaymentService.GetEventByIdAsync(eventId);
+
+        if(eventViewModel is not null)
+        {
+            checkoutUrl = await MakePaymentService.CreateCheckoutSessionAsync(eventViewModel!, NavigationManager.BaseUri, NavigationManager.Uri);
+        }
+    }
+
+    public async Task StartCheckout()
+    {
+        if(!string.IsNullOrEmpty(checkoutUrl) && eventViewModel is not null)
+        {
+            NavigationManager.NavigateTo(checkoutUrl, true);
+        }
+    }
+}

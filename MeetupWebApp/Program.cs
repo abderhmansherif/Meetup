@@ -5,6 +5,7 @@ using MeetupWebApp.Features.Events.EditEvents;
 using MeetupWebApp.Features.Events.Shared;
 using MeetupWebApp.Features.Events.ViewEvents;
 using MeetupWebApp.Features.LeaveAComment;
+using MeetupWebApp.Features.MakePayment;
 using MeetupWebApp.Features.ManageUserRSVPEvents;
 using MeetupWebApp.Features.RSVPEvent;
 using MeetupWebApp.Features.ViewSingleEvent;
@@ -98,6 +99,7 @@ builder.Services.AddTransient<DeleteEventService>();
 builder.Services.AddTransient<DiscoverEventsService>();
 builder.Services.AddTransient<ViewSingleEventService>();
 builder.Services.AddSingleton<LayoutService>();
+builder.Services.AddTransient<MakePaymentService>();
 builder.Services.AddTransient<LeaveACommentService>();
 builder.Services.AddTransient<RSVPEventService>();
 builder.Services.AddTransient<ManageUserRSVPEventsService>();
@@ -128,6 +130,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapAuth();
+app.MapPayments();
 
 app.Run();
 

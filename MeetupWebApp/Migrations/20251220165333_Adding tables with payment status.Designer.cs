@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MeetupWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251216215330_Modifing the Event Entity with payment features properties")]
-    partial class ModifingtheEventEntitywithpaymentfeaturesproperties
+    [Migration("20251220165333_Adding tables with payment status")]
+    partial class Addingtableswithpaymentstatus
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -156,6 +156,40 @@ namespace MeetupWebApp.Migrations
                     b.ToTable("RSVPs");
                 });
 
+            modelBuilder.Entity("MeetupWebApp.Data.Entities.Transaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RASVPId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RASVPId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Transactions");
+                });
+
             modelBuilder.Entity("MeetupWebApp.Data.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -230,11 +264,35 @@ namespace MeetupWebApp.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("MeetupWebApp.Data.Entities.Transaction", b =>
+                {
+                    b.HasOne("MeetupWebApp.Data.Entities.RSVP", "RASVP")
+                        .WithMany("Transactions")
+                        .HasForeignKey("RASVPId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("MeetupWebApp.Data.Entities.User", "User")
+                        .WithMany("Transactions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("RASVP");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("MeetupWebApp.Data.Entities.Event", b =>
                 {
                     b.Navigation("Comments");
 
                     b.Navigation("RSVPs");
+                });
+
+            modelBuilder.Entity("MeetupWebApp.Data.Entities.RSVP", b =>
+                {
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("MeetupWebApp.Data.Entities.User", b =>
@@ -244,6 +302,8 @@ namespace MeetupWebApp.Migrations
                     b.Navigation("Event");
 
                     b.Navigation("RSVPs");
+
+                    b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618
         }

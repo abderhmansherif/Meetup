@@ -19,6 +19,7 @@ namespace MeetupWebApp.Data.Entities
 
         public List<RSVP>? RSVPs { get; set; }
         public List<Comment>? Comments { get; set; }
+        public List<Transaction>? Transactions { get; set; }
 
         // if the user is organizer
         public Event? Event { get; set; }

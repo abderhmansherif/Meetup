@@ -15,5 +15,8 @@ namespace MeetupWebApp.Data.Entities
         public DateTime RSVPDate {  get; set; }
         [Required]
         public string? Status { get; set; }
+
+        public List<Transaction>? Transactions { get; set; }
+
     }
 }

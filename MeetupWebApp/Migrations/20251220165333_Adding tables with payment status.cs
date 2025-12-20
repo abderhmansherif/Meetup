@@ -5,14 +5,14 @@
 namespace MeetupWebApp.Migrations
 {
     /// <inheritdoc />
-    public partial class modifi : Migration
+    public partial class Addingtableswithpaymentstatus : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "Username",
-                table: "Comments",
+                name: "PaymentStatus",
+                table: "Transactions",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "");
@@ -22,8 +22,8 @@ namespace MeetupWebApp.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Username",
-                table: "Comments");
+                name: "PaymentStatus",
+                table: "Transactions");
         }
     }
 }
