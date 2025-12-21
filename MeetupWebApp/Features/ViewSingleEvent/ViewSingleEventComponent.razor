@@ -15,6 +15,21 @@
         <p>
             <img src="@eventViewModel.ImageUrl" alt="Event Image" class="rounded" />
         </p>
+
+        <h6>Price</h6>
+        @if(eventViewModel.HasCost)
+        {
+            <span class="badge bg-primary mb-2">
+                @eventViewModel.TicketPrice $
+            </span>
+        }
+        else
+        {
+            <span class="badge bg-success mb-2">
+                FREE
+            </span>
+        }
+
         <br />
 
         <h6>Details</h6>

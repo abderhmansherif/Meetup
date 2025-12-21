@@ -1,4 +1,5 @@
 ﻿@page "/users/{userId:int}/manage-rsvp-events"
+@using MeetupWebApp.Features.CencelRSVP
 @attribute [Authorize(policy: "SameUser")]
 @inject ManageUserRSVPEventsService ManageUserRSVPEventsService
 @inherits BaseComponent
@@ -32,8 +33,8 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="text-end"> 
-                
+            <div class="text-end ">
+                <CencelRSVPComponent></CencelRSVPComponent>
             </div>
         </div>
     }

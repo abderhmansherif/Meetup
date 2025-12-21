@@ -19,7 +19,8 @@ namespace MeetupWebApp.Features.MakePayment
                 // Gets the payment details
                 var session = await makePaymentService.GetCheckoutSessionAsync(PaymentId);
 
-                if(session is null)
+
+                if (session is null)
                 {
                     ctx.Response.Redirect("/payment-failed");
                     return;

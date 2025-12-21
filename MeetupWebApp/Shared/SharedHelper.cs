@@ -14,6 +14,7 @@ namespace MeetupWebApp.Shared
         public const string RSPV_NOTGOING_STATUS = "NotGoing";
         public const string USER_ID_CLAIM_TYPE = "UserId";
         public const string USER_ROLE_CLAIM_TYPE = "UserRole";
+        public const string RSVP_CANCEL_STATUS = "Canceled";
 
         public SharedHelper(NavigationManager NavigationManager)
         {
@@ -46,6 +47,7 @@ namespace MeetupWebApp.Shared
         public static string GetRSVPNotGoingStatus() => RSPV_NOTGOING_STATUS;
         public static string GetUserIdClaimType() => USER_ID_CLAIM_TYPE;
         public static string GetUserRoleClaimType() => USER_ROLE_CLAIM_TYPE;
+        public static string GetRSVPCancelStatus() => RSVP_CANCEL_STATUS;
 
     }
 }
