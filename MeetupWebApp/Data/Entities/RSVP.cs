@@ -15,7 +15,10 @@ namespace MeetupWebApp.Data.Entities
         public DateTime RSVPDate {  get; set; }
         [Required]
         public string? Status { get; set; }
-
+        public string? PaymentStatus { get; set; }
+        public string? PaymentId { get; set; }
+        public string? RefundId { get; set; }
+        public string? RefundStatus { get; set; }
         public List<Transaction>? Transactions { get; set; }
 
     }

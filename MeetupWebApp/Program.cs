@@ -1,4 +1,5 @@
 ﻿using MeetupWebApp.Data;
+using MeetupWebApp.Features.CencelRSVP;
 using MeetupWebApp.Features.DeleteEvent;
 using MeetupWebApp.Features.Events.CreateEvent;
 using MeetupWebApp.Features.Events.EditEvents;
@@ -98,6 +99,7 @@ builder.Services.AddTransient<EventValidationService>();
 builder.Services.AddTransient<DeleteEventService>();
 builder.Services.AddTransient<DiscoverEventsService>();
 builder.Services.AddTransient<ViewSingleEventService>();
+builder.Services.AddTransient<CencelRSVPService>();
 builder.Services.AddSingleton<LayoutService>();
 builder.Services.AddTransient<MakePaymentService>();
 builder.Services.AddTransient<LeaveACommentService>();

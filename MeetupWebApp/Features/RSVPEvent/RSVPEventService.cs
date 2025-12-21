@@ -82,7 +82,7 @@ namespace MeetupWebApp.Features.RSVPEvent
 
             var RSVPExist = await context.RSVPs.FirstOrDefaultAsync(x => x.UserId == UserExist.Id && x.EventId == EventExist.Id);
 
-            if (RSVPExist is not null)
+            if (RSVPExist is not null && RSVPExist.Status == SharedHelper.GetRSVPGoingStatus())
                 return false;
 
             return true;

@@ -11,7 +11,7 @@ namespace MeetupWebApp.Features.CencelRSVP
         public IDbContextFactory<ApplicationDbContext> Factory { get; } = factory;
         public IConfiguration Configuration { get; } = configuration;
 
-        public async Task<int> CencelRSVP(int eventId, int userId)
+        public async Task<int> CencelRSVPAsync(int eventId, int userId)
         {
             using var context = await Factory.CreateDbContextAsync();
 
@@ -28,36 +28,37 @@ namespace MeetupWebApp.Features.CencelRSVP
             if (rsvp.Event.Refundable)
             {
                 StripeConfiguration.ApiKey = Configuration["Stripe:ApiKey"];
-                var refund = await ProcessRefund(rsvp);
+                var refund = ProcessRefund(rsvp);
 
                 if(refund is not null)
                 {
-                    var transaction = new Transaction
-                    {
-                        UserId = userId,
-                        RASVPId = rsvp.Id,
-                        RefundId = refund.Id,
-                        RefundStatus = refund.Status,
-                        CreatedAt = DateTime.Now
-                    };
+                    // Update RSVP with refund details
+                    rsvp.RefundId = refund.Id;
+                    rsvp.RefundStatus = refund.Status;
                 }
             }
-
             await context.SaveChangesAsync();
 
             return rsvp.Id;
         }
 
-        public async Task<Refund> ProcessRefund(RSVP rsvp)
+        public async Task<RSVP> GetRSVPByIdAsync(int rsvpId)
+        {
+            using var context = await Factory.CreateDbContextAsync();
+            var rsvp = await context.RSVPs.FirstOrDefaultAsync(x => x.Id == rsvpId);
+            return rsvp;
+        }
+
+        private  Refund ProcessRefund(RSVP rsvp)
         {
             var options = new RefundCreateOptions()
             {
-                PaymentIntent = rsvp.Transactions.Where(x => !string.IsNullOrEmpty(x.PaymentId)).FirstOrDefault()?.PaymentId,
-                Reason = "User_Requested",
+                PaymentIntent = rsvp.PaymentId,
+                Reason = "requested_by_customer",
             };
 
             var service = new RefundService();
-            Refund refund = await service.CreateAsync(options);
+            Refund refund =  service.Create(options);
             return refund;
         }
 

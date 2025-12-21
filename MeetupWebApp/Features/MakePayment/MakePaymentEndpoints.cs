@@ -26,41 +26,48 @@ namespace MeetupWebApp.Features.MakePayment
                     return;
                 }
 
+                using var context = await factory.CreateDbContextAsync();
+
+
                 // Create the RSVP record for user
                 var userId = int.Parse(ctx.User.Claims
                     .FirstOrDefault(c => c.Type == SharedHelper.GetUserIdClaimType())!.Value);
 
-                bool canESVP = await makePaymentService.CanRSVP(eventId, userId);
 
-                if(!canESVP)
+                var ExistedRSVP = await context.RSVPs
+                    .FirstOrDefaultAsync(r => r.EventId == eventId && r.UserId == userId);
+
+                if(ExistedRSVP is null)
                 {
-                    ctx.Response.Redirect("/");
-                    return;
+                    ExistedRSVP = new RSVP
+                    {
+                        EventId = eventId,
+                        UserId = userId,
+                        Status = SharedHelper.GetRSVPGoingStatus(),
+                        RSVPDate = DateTime.UtcNow,
+                        PaymentId = session.PaymentIntentId,
+                        PaymentStatus = session.PaymentStatus,
+                        RefundId = string.Empty, // 
+                        RefundStatus = string.Empty,
+                    };
+                    await context.RSVPs.AddAsync(ExistedRSVP);
+
+                }
+                else
+                {
+                    ExistedRSVP.PaymentId = session.PaymentIntentId;
+                    ExistedRSVP.Status = SharedHelper.GetRSVPGoingStatus();
+                    ExistedRSVP.PaymentStatus = session.PaymentStatus;
+                    ExistedRSVP.RefundId = string.Empty;
+                    ExistedRSVP.RefundStatus = string.Empty;
+                    ExistedRSVP.RSVPDate = DateTime.Now;
                 }
 
-                var newRsvp = new RSVP
-                {
-                    EventId = eventId,
-                    UserId = userId,
-                    Status = SharedHelper.GetRSVPGoingStatus(),
-                    RSVPDate = DateTime.UtcNow
-                };
-
-                using var context = await factory.CreateDbContextAsync();
-                await context.RSVPs.AddAsync(newRsvp);
                 await context.SaveChangesAsync();
 
-                // Record the transaction
-                var recordResult = await makePaymentService.RecordTransactionAsync(newRsvp.Id, userId, session);
-
-                if(!recordResult)
-                {
-                    ctx.Response.Redirect("/");
-                    return;
-                }
 
                 ctx.Response.Redirect($"/users/{userId}/manage-rsvp-events");
-            });
+            }).RequireAuthorization();
 
             return app;
         }

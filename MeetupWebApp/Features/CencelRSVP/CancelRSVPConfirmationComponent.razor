@@ -1,0 +1,40 @@
+﻿@page "/cancel-rsvp-confirmation/{rsvpId:int}"
+@using MeetupWebApp.Data.Entities
+@inject CencelRSVPService CencelRSVPService
+@rendermode InteractiveServer
+
+<h3>RSVP Cancellation Confirmation</h3>
+
+@if (rsvpId > 0 && rsvp != null)
+{
+    <div class="alert alert-success" role="alert">
+        Your RSVP for the event <strong>@rsvp?.Event?.Title</strong> has been successfully cancelled.
+    </div>
+
+    if(!string.IsNullOrEmpty(rsvp.RefundStatus))
+    {
+        <div class="alert alert-info" role="alert">
+            Your refund status is: <strong>@rsvp.RefundStatus</strong>
+        </div>
+    }
+}
+else
+{
+    <div class="alert alert-danger" role="alert">
+        Unable to find the RSVP details. Please contact support if you believe this is an error.
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public int rsvpId { get; set; }
+
+    public RSVP? rsvp;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        rsvp = await CencelRSVPService.GetRSVPByIdAsync(rsvpId);
+    }
+   
+}

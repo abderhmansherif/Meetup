@@ -1,10 +1,31 @@
-﻿
+﻿@inject CencelRSVPService CencelRSVPService
+@inject NavigationManager NavigationManager
+@inherits BaseComponent 
+@rendermode InteractiveServer
 
-<button class="btn btn-danger">
+<button class="btn btn-danger" @onclick="CencelRSVP">
     Cancel RSVP
 </button>
+
+<ModelDialogConfimationComponent @ref="modelDialog"></ModelDialogConfimationComponent>
 
 @code {
     [Parameter]
     public int EventId { get; set; }
+    public ModelDialogConfimationComponent? modelDialog;
+
+    public async Task CencelRSVP()
+    {
+        if (modelDialog is not null)
+        {
+            modelDialog.ShowModel("Are you sure you want to cencel RSVP for this event.", async () =>
+            {
+                var rsvpId = await CencelRSVPService.CencelRSVPAsync(EventId, int.Parse(base.UserId));
+
+                NavigationManager.NavigateTo($"/cancel-rsvp-confirmation/{rsvpId}");
+            });
+        }
+    }
+
+
 }
