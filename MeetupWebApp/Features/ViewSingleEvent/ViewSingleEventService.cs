@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using MeetupWebApp.Data;
 using MeetupWebApp.Data.Entities;
-using MeetupWebApp.Features.Events.Shared;
 using MeetupWebApp.Shared;
+using MeetupWebApp.Shared.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace MeetupWebApp.Features.ViewSingleEvent

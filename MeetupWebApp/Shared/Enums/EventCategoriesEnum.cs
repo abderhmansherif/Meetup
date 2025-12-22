@@ -1,4 +1,4 @@
-﻿namespace MeetupWebApp.Features.Events.Shared
+﻿namespace MeetupWebApp.Shared.Enums
 {
     public enum EventCategoriesEnum
     {

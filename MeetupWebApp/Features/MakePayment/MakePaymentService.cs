@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using MeetupWebApp.Data;
 using MeetupWebApp.Data.Entities;
-using MeetupWebApp.Features.Events.Shared;
 using MeetupWebApp.Shared;
+using MeetupWebApp.Shared.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Stripe;
 using Stripe.Checkout;
@@ -96,31 +96,5 @@ namespace MeetupWebApp.Features.MakePayment
             var session = await service.GetAsync(paymentId);
             return session;
         }
-
-        public async Task<bool> RecordTransactionAsync(int rsvpId, int userId, Session session)
-        {
-            using var context = await Factory.CreateDbContextAsync();
-
-            var rsvp = await context.RSVPs.FindAsync(rsvpId);
-            if (rsvp == null)
-            {
-                return false; // RSVP not found
-            }
-
-            var transaction = new Data.Entities.Transaction
-            {
-                PaymentId = session.PaymentIntentId,
-                PaymentStatus = session.PaymentStatus,
-                UserId = userId,
-                RASVPId = rsvp.Id,
-                CreatedAt = DateTime.Now
-            };
-            context.Transactions.Add(transaction);
-            await context.SaveChangesAsync();
-            return true;
-        }
-    
     }
-
-
 }

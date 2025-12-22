@@ -1,6 +1,7 @@
-﻿@using Microsoft.AspNetCore.Authentication
+﻿@using System.Security.Claims
+@using MeetupWebApp.Shared.ViewModels
+@using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Components.Authorization
-@using System.Security.Claims
 @rendermode InteractiveServer
 @inject IAuthenticationSchemeProvider AuthenticationSchemeProvider
 @inject NavigationManager NavigationManager
@@ -65,7 +66,7 @@
         if(AuthenticationState.User?.Identity?.IsAuthenticated ?? false)
         {
             Email = AuthenticationState.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
-            userId = int.Parse(AuthenticationState.User.Claims.FirstOrDefault(x => x.Type == SharedHelper.GetUserIdClaimType()).Value);
+            userId = int.Parse(AuthenticationState.User!.Claims.FirstOrDefault(x => x.Type == SharedHelper.GetUserIdClaimType())!.Value);
         }
 
     }
@@ -89,8 +90,7 @@
                     }
                     else
                     {
-                        bool result = await RSVPEventService.AddRSVPEventAsync(_Event.Id, Email ?? string.Empty);
-                        if (result)
+                        if (await RSVPEventService.AddRSVPEventAsync(_Event.Id, Email ?? string.Empty, "", ""))
                         {
                             NavigationManager.NavigateTo($"/users/{userId}/manage-rsvp-events", true);
                         }

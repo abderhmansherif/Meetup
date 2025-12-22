@@ -1,4 +1,4 @@
-﻿using MeetupWebApp.Features.Events.Shared;
+﻿using MeetupWebApp.Shared.Enums;
 using Microsoft.AspNetCore.Components;
 using System.Web;
 

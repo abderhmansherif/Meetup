@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using MeetupWebApp.Data;
 using MeetupWebApp.Data.Entities;
+using MeetupWebApp.Shared.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
-namespace MeetupWebApp.Features.Events.Shared
+namespace MeetupWebApp.Shared.Services
 {
     public class DiscoverEventsService
     {

@@ -4,7 +4,7 @@ using MeetupWebApp.Shared;
 using Microsoft.EntityFrameworkCore;
 using System;
 
-namespace MeetupWebApp.Features.RSVPEvent
+namespace MeetupWebApp.Shared.Services
 {
     public class RSVPEventService
     {

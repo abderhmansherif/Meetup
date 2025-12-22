@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using MeetupWebApp.Shared.Enums;
+using MeetupWebApp.Shared.ViewModels;
 
-namespace MeetupWebApp.Features.Events.Shared
+namespace MeetupWebApp.Shared.Services
 {
     public class EventValidationService
     {

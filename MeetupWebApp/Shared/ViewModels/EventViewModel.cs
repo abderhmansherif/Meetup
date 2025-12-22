@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
 using System.ComponentModel.DataAnnotations;
 
-namespace MeetupWebApp.Features.Events.Shared
+namespace MeetupWebApp.Shared.ViewModels
 {
     public class EventViewModel
     {

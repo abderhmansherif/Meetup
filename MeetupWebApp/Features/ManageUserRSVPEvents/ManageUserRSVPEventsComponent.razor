@@ -1,5 +1,6 @@
 ﻿@page "/users/{userId:int}/manage-rsvp-events"
 @using MeetupWebApp.Features.CencelRSVP
+@using MeetupWebApp.Shared.ViewModels
 @attribute [Authorize(policy: "SameUser")]
 @inject ManageUserRSVPEventsService ManageUserRSVPEventsService
 @inherits BaseComponent

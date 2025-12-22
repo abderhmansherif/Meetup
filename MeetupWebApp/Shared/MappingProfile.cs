@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MeetupWebApp.Data.Entities;
-using MeetupWebApp.Features.Events.Shared;
 using MeetupWebApp.Features.LeaveAComment;
+using MeetupWebApp.Shared.ViewModels;
 
 namespace MeetupWebApp.Shared
 {
