@@ -36,7 +36,7 @@ namespace MeetupWebApp.Shared.Services
             return RSVPExist.Status ?? string.Empty;
         }
 
-        public async Task<bool> CanRSVP(int eventId, string email)
+        public async Task<bool> CanRSVP(int eventId, string email, int userId = 0)
         {
             using var context = Factory.CreateDbContext();
 
@@ -46,6 +46,11 @@ namespace MeetupWebApp.Shared.Services
             if (EventExist == null)
             {
                 return false;
+            }
+
+            if (UserExist == null)
+            {
+                UserExist = await context.Users.FirstOrDefaultAsync(x => x.Id == userId);
             }
 
             if (UserExist == null)
@@ -61,9 +66,9 @@ namespace MeetupWebApp.Shared.Services
             return true;
         }
 
-        public async Task<int> RSVPEventAsync(int EventId, string Email, string? paymentId = "", string? paymentStatus = "")
+        public async Task<int> RSVPEventAsync(int EventId, string Email = "", int UserId = 0, string? paymentId = "", string? paymentStatus = "")
         {
-            if(!await CanRSVP(EventId, Email))
+            if(!await CanRSVP(EventId, Email, UserId))
             {
                 return 0;
             }
@@ -71,6 +76,16 @@ namespace MeetupWebApp.Shared.Services
             using var context = Factory.CreateDbContext();
 
             var UserExist = await context.Users.FirstOrDefaultAsync(x => x.Email == Email);
+
+            if (UserExist == null) 
+            {
+                UserExist = await context.Users.FirstOrDefaultAsync(x => x.Id == UserId);
+            }
+
+            if (UserExist == null)
+            {
+                return 0;
+            }
 
             var RSVPExist = await context.RSVPs.Include(x => x.Event).Include(x => x.User).FirstOrDefaultAsync(x => x.User.Email == Email && x.Event.Id == EventId);
 

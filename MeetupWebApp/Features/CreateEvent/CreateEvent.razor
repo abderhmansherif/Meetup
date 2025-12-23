@@ -7,7 +7,7 @@
 @inject EventValidationService EventValidationService
 @using MeetupWebApp.Shared.ViewModels
 @inherits BaseComponent
-@attribute [Authorize]
+@attribute [Authorize("OnlyOrganizers")]
 
 
 <PageTitle>New Meetup</PageTitle>
@@ -50,11 +50,9 @@
             return;
         }
 
-
         if (string.IsNullOrEmpty(ErrorMessage))
         {
             _eventViewModel.OrganizerId = int.Parse(base.UserId);
-
 
             // Save Meetup
             await CreateEventService.CraeteEventAsync(_eventViewModel);

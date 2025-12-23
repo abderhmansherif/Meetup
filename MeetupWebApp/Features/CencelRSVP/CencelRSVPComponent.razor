@@ -20,10 +20,8 @@
         {
             modelDialog.ShowModel("Are you sure you want to cencel RSVP for this event.", async () =>
             {
-                //Cancel RSVP 
+                //Cancel RSVP & Store Refund Transaction
                 var rsvpId = await CencelRSVPService.CencelRSVPAsync(EventId, int.Parse(base.UserId));
-
-                //Store Transaction
 
                 NavigationManager.NavigateTo($"/cancel-rsvp-confirmation/{rsvpId}");
             });

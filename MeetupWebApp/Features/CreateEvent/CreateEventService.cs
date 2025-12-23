@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MeetupWebApp.Data;
 using MeetupWebApp.Data.Entities;
+using MeetupWebApp.Shared.Services;
 using MeetupWebApp.Shared.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -11,12 +12,14 @@ namespace MeetupWebApp.Features.Events.CreateEvent
     {
         private readonly IDbContextFactory<ApplicationDbContext> _factory;
         private readonly IMapper _mapper;
+        private readonly RSVPEventService RSVPEventService;
         private EventViewModel? _eventViewModel;
 
-        public CreateEventService(IDbContextFactory<ApplicationDbContext> factory, IMapper mapper)
+        public CreateEventService(IDbContextFactory<ApplicationDbContext> factory, IMapper mapper, RSVPEventService RSVPEventService)
         {
             _factory = factory;
             _mapper = mapper;
+            this.RSVPEventService = RSVPEventService;
         }
 
         public async Task CraeteEventAsync(EventViewModel eventViewModel)
@@ -24,15 +27,16 @@ namespace MeetupWebApp.Features.Events.CreateEvent
             if (eventViewModel is null)
                 throw new ArgumentNullException(nameof(eventViewModel));
 
-            using (var context = await _factory.CreateDbContextAsync())
-            {
+            using var context = await _factory.CreateDbContextAsync();
+            
+            // Create the Event
+            var Event = _mapper.Map<Event>(eventViewModel);
 
-                var Event = _mapper.Map<Event>(eventViewModel);
+            context.Events?.Add(Event);
+            context.SaveChanges();
 
-                context.Events?.Add(Event);
-
-                await context.SaveChangesAsync();
-            }
+            //Create the RSVP for the Organizer
+            await RSVPEventService.RSVPEventAsync(Event.Id, UserId: Event.OrganizerId);
         }
        
     }

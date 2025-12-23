@@ -8,9 +8,11 @@ using MeetupWebApp.Features.LeaveAComment;
 using MeetupWebApp.Features.MakePayment;
 using MeetupWebApp.Features.ManageUserRSVPEvents;
 using MeetupWebApp.Features.ViewSingleEvent;
+using MeetupWebApp.Features.ViewTransactions;
 using MeetupWebApp.Shared;
 using MeetupWebApp.Shared.Authentication;
 using MeetupWebApp.Shared.Endpoints;
+using MeetupWebApp.Shared.Policies.OnlyOrganizersPolicy;
 using MeetupWebApp.Shared.Policies.SameUserPolicy;
 using MeetupWebApp.Shared.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -78,6 +80,10 @@ builder.Services.AddAuthorization(op =>
     {
         policy.AddRequirements(new SameUserRequirement());
     });
+    op.AddPolicy("OnlyOrganizers", policy =>
+    {
+        policy.Requirements.Add(new OnlyOrganizersRequirement());
+    });
 });
 
 
@@ -86,10 +92,12 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(op =>
     op.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IAuthorizationHandler, SameUserHandler>();
+builder.Services.AddSingleton<IAuthorizationHandler, OnlyOrganizersHandler>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddTransient<CreateEventService>();
-builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<ViewTransactionsService>();
 builder.Services.AddTransient<ViewEventService>();
 builder.Services.AddTransient<SharedHelper>();
 builder.Services.AddTransient<EditEventsService>();

@@ -1,0 +1,96 @@
+﻿@page "/org/transactions/"
+@using MeetupWebApp.Data.Entities
+@using Microsoft.AspNetCore.Components.Authorization
+@inherits BaseComponent
+@inject NavigationManager NavigationManager
+@inject ViewTransactionsService ViewTransactionsService
+@rendermode InteractiveServer
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize("OnlyOrganizers")]
+
+<h3>Attendee Transactions</h3>
+
+
+<div class="row">
+    <div class="col-md-6">
+        <label for="startDate">Start Date</label>
+        <InputDate id="startDate" @bind-Value="startDate" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label for="endDate">End Date</label>
+        <InputDate id="endDate" @bind-Value="endDate" class="form-control" />
+    </div>
+</div>
+
+<button class="btn btn-primary mt-3 mb-3" @onclick="FilterTransactions">Filter</button>
+
+@if (transactions is not null && transactions.Count > 0)
+{
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>Meetup</th>
+                <th>Attendee Name</th>
+                <th>Payment Type</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Amount</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var transaction in transactions)
+            {
+                <tr>
+                    <td>@transaction.RASVP.Event.Title</td>
+                    <td>@(transaction?.User?.Username ?? "UnKnown User")</td>
+                    <td>@transaction.PaymentType</td>
+                    <td>@transaction.Status</td>
+                    <td>@transaction.Amount.ToString("C")</td>
+                    <td>@transaction.PaymentAt.ToShortDateString()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    
+}
+else
+{
+    @*make a good style with showing that no transactions at this moment*@
+
+    <div class="alert alert-info">
+        <strong>No Transactions Found</strong>
+        <p>There are no transactions to display at this moment.</p>
+    </div>
+}
+
+
+@code {
+    public DateTime startDate { get; set; } 
+    public DateTime endDate { get; set; } 
+    public AuthenticationState? AuthState;
+    public string userId = string.Empty;
+    public List<Transaction>? transactions { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        startDate = DateTime.Now.AddMonths(-1);
+        endDate = DateTime.Now;
+
+        userId = AuthState.User.FindFirst(c => c.Type == SharedHelper.GetUserIdClaimType())?.Value ?? string.Empty;
+
+        if (!string.IsNullOrEmpty(userId))
+        {
+            transactions = await ViewTransactionsService.GetTransactionsAsync(int.Parse(userId), startDate, endDate);
+        }
+    }
+
+   
+
+    public async Task FilterTransactions()
+    {
+        if (!string.IsNullOrEmpty(userId))
+            transactions = await ViewTransactionsService.GetTransactionsAsync(int.Parse(userId), startDate, endDate);
+    }
+}

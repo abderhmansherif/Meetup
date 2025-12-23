@@ -34,7 +34,7 @@ namespace MeetupWebApp.Features.MakePayment
                 string Email = ctx.User.Claims
                    .FirstOrDefault(c => c.Type == ClaimTypes.Email)!.Value;
 
-                var rsvpId = await RSVPEventService.RSVPEventAsync(eventId, Email, session.PaymentIntentId, session.PaymentStatus);
+                var rsvpId = await RSVPEventService.RSVPEventAsync(eventId, Email, paymentId: session.PaymentIntentId, paymentStatus: session.PaymentStatus);
 
                 if(rsvpId <= 0)
                 {

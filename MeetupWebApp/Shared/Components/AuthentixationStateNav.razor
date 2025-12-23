@@ -1,4 +1,5 @@
 ﻿@using MeetupWebApp.Features.BeAnOrganizer
+@using MeetupWebApp.Features.ViewTransactions
 @using Microsoft.AspNetCore.Components.Authorization
 @using System.Security.Claims
 @inject NavigationManager NavigationManager
@@ -8,6 +9,7 @@
 <ul class="navbar-nav ms=auto">
     @if (base.IsAuthentdicated)
     {
+        <ViewTransactionButton></ViewTransactionButton>
         <BeAnOrganizerComponent></BeAnOrganizerComponent>
 
         <li class="nav-item">
