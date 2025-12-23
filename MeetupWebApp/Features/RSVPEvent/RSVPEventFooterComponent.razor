@@ -90,7 +90,9 @@
                     }
                     else
                     {
-                        if (await RSVPEventService.AddRSVPEventAsync(_Event.Id, Email ?? string.Empty, "", ""))
+                        var rsvpId = await RSVPEventService.RSVPEventAsync(_Event.Id, Email ?? string.Empty);
+
+                        if (rsvpId > 0)
                         {
                             NavigationManager.NavigateTo($"/users/{userId}/manage-rsvp-events", true);
                         }

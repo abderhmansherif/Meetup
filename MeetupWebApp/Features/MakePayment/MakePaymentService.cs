@@ -59,30 +59,31 @@ namespace MeetupWebApp.Features.MakePayment
             return session.Url;
         }
 
-        public async Task<bool> CanRSVP(int eventId, int userId)
+        public async Task RecordTransactionAsync(int rsvpId, int userId, string paymentId, string paymentStatus)
         {
-            using var context = Factory.CreateDbContext();
+            // Implementation for recording transaction goes here
+            using var context = await Factory.CreateDbContextAsync();
 
-            var EventExist = await context.Events.FirstOrDefaultAsync(x => x.Id == eventId);
-            var UserExist = await context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            var rsvpExist = await context.RSVPs.Include(x => x.Event).FirstOrDefaultAsync(x => x.Id == rsvpId);
 
-            if (EventExist == null)
+            if (rsvpExist is not null && rsvpExist.Event is not null && rsvpExist.Event.HasCost && rsvpExist.Event.TicketPrice is not null)
             {
-                return false;
+                var transaction = new Transaction()
+                {
+                    UserId = userId,
+                    RASVPId = rsvpId,
+                    Amount = rsvpExist.Event.TicketPrice.Value,
+                    PaymentId = paymentId,
+                    Status = paymentStatus,
+                    PaymentType = SharedHelper.GetPaymentTypeCharge(),
+                    PaymentAt = DateTime.Now
+                };
+
+                await context.Transactions.AddAsync(transaction);
+                await context.SaveChangesAsync();
             }
-
-            if (UserExist == null)
-            {
-                return false;
-            }
-
-            var RSVPExist = await context.RSVPs.FirstOrDefaultAsync(x => x.UserId == UserExist.Id && x.EventId == EventExist.Id);
-
-            if (RSVPExist is not null)
-                return false;
-
-            return true;
         }
+
 
         public async Task<Session> GetCheckoutSessionAsync(string paymentId)
         {

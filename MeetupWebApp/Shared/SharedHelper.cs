@@ -15,6 +15,8 @@ namespace MeetupWebApp.Shared
         public const string USER_ID_CLAIM_TYPE = "UserId";
         public const string USER_ROLE_CLAIM_TYPE = "UserRole";
         public const string RSVP_CANCEL_STATUS = "Canceled";
+        public const string PAYMENT_TYPE_CHARGE = "Charge";
+        public const string PAYMENT_TYPE_REFUND = "Refund";
 
         public SharedHelper(NavigationManager NavigationManager)
         {
@@ -48,6 +50,8 @@ namespace MeetupWebApp.Shared
         public static string GetUserIdClaimType() => USER_ID_CLAIM_TYPE;
         public static string GetUserRoleClaimType() => USER_ROLE_CLAIM_TYPE;
         public static string GetRSVPCancelStatus() => RSVP_CANCEL_STATUS;
+        public static string GetPaymentTypeCharge() => PAYMENT_TYPE_CHARGE;
+        public static string GetPaymentTypeRefund() => PAYMENT_TYPE_REFUND;
 
     }
 }

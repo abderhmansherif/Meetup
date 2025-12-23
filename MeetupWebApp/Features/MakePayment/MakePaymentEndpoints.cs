@@ -15,7 +15,7 @@ namespace MeetupWebApp.Features.MakePayment
             app.MapGet("/success-payment/{eventId:int}/{PaymentId}", 
                 async (HttpContext ctx, int eventId, string PaymentId) =>
             {
-                var factory = ctx.RequestServices.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
+                // Gets the Services
                 var makePaymentService = ctx.RequestServices.GetRequiredService<MakePaymentService>();
                 var RSVPEventService = ctx.RequestServices.GetRequiredService<RSVPEventService>();
                 // Gets the payment details
@@ -27,36 +27,23 @@ namespace MeetupWebApp.Features.MakePayment
                     return;
                 }
 
-                using var context = await factory.CreateDbContextAsync();
-
-
-                // Create the RSVP record for user
+                // Create the RSVP record for user, if the RSVP is already exist then update it with new status
                 var userId = int.Parse(ctx.User.Claims
                     .FirstOrDefault(c => c.Type == SharedHelper.GetUserIdClaimType())!.Value);
 
                 string Email = ctx.User.Claims
                    .FirstOrDefault(c => c.Type == ClaimTypes.Email)!.Value;
 
+                var rsvpId = await RSVPEventService.RSVPEventAsync(eventId, Email, session.PaymentIntentId, session.PaymentStatus);
 
-
-                var ExistedRSVP = await context.RSVPs
-                    .FirstOrDefaultAsync(r => r.EventId == eventId && r.UserId == userId);
-
-                if(ExistedRSVP is null)
+                if(rsvpId <= 0)
                 {
-                    await RSVPEventService.AddRSVPEventAsync(eventId, Email, session.PaymentIntentId, session.PaymentStatus);
-                }
-                else
-                {
-                    ExistedRSVP.PaymentId = session.PaymentIntentId;
-                    ExistedRSVP.Status = SharedHelper.GetRSVPGoingStatus();
-                    ExistedRSVP.PaymentStatus = session.PaymentStatus;
-                    ExistedRSVP.RefundId = string.Empty;
-                    ExistedRSVP.RefundStatus = string.Empty;
+                    ctx.Response.Redirect($"/rsvp-error/{eventId}");
+                    return;
                 }
 
-                await context.SaveChangesAsync();
-
+                //Record the transation
+                await makePaymentService.RecordTransactionAsync(rsvpId, userId, session.PaymentIntentId, session.PaymentStatus);
 
                 ctx.Response.Redirect($"/users/{userId}/manage-rsvp-events");
 

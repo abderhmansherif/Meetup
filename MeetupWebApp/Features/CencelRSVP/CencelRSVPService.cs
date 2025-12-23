@@ -35,6 +35,19 @@ namespace MeetupWebApp.Features.CencelRSVP
                     // Update RSVP with refund details
                     rsvp.RefundId = refund.Id;
                     rsvp.RefundStatus = refund.Status;
+
+                    //Record the refund transaction
+                    var transaction = new Transaction
+                    {
+                        RASVPId = rsvp.Id,
+                        UserId = userId,
+                        PaymentType = SharedHelper.GetPaymentTypeRefund(),
+                        PaymentId = refund.PaymentIntentId,
+                        Status = refund.Status,
+                        PaymentAt = DateTime.Now,
+                        Amount = -rsvp.Event.TicketPrice!.Value
+                    };
+                    await context.Transactions.AddAsync(transaction);
                 }
             }
             await context.SaveChangesAsync();
@@ -61,7 +74,5 @@ namespace MeetupWebApp.Features.CencelRSVP
             Refund refund =  service.Create(options);
             return refund;
         }
-
-
     }
 }
