@@ -23,5 +23,11 @@ namespace MeetupWebApp.Data.Entities
 
         // if the user is organizer
         public Event? Event { get; set; }
+
+        // if the user is organizer 
+        public List<OrganizerReview>? OrganizerReviews { get; set; }
+
+        // if the user is regular user not an organizer
+        public List<OrganizerReview>? LeftByUser { get; set; }
     }
 }

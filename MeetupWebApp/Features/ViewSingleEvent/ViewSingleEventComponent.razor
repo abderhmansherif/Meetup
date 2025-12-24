@@ -2,6 +2,7 @@
 @using MeetupWebApp.Data.Entities
 @using MeetupWebApp.Features.LeaveAComment
 @using MeetupWebApp.Features.RSVPEvent
+@using MeetupWebApp.Features.ViewOrganizerReviews
 @using MeetupWebApp.Shared.ViewModels
 @inject ViewSingleEventService viewSingleEventService
 @inject LayoutService layoutService
@@ -11,6 +12,8 @@
 {
     <div style="padding-bottom: 80px">
         <h2>@eventViewModel.Title</h2>
+
+        <ViewOrganizerAverageReviewsComponent OrgId="@eventViewModel.OrganizerId"></ViewOrganizerAverageReviewsComponent>
         <hr />
 
         <p>

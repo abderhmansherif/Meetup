@@ -13,18 +13,19 @@ namespace MeetupWebApp.Data
         public DbSet<RSVP> RSVPs { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<OrganizerReview> OrganizerReviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RSVP>()
-                   .HasOne(x => x.User)
-                   .WithMany(x => x.RSVPs)
-                   .HasForeignKey(x => x.UserId);
+                .HasOne(x => x.User)
+                .WithMany(x => x.RSVPs)
+                .HasForeignKey(x => x.UserId);
 
             modelBuilder.Entity<RSVP>()
-                   .HasOne(x => x.Event)
-                   .WithMany(x => x.RSVPs)
-                   .HasForeignKey(x => x.EventId);
+                .HasOne(x => x.Event)
+                .WithMany(x => x.RSVPs)
+                .HasForeignKey(x => x.EventId);
 
             modelBuilder.Entity<Comment>()
                 .HasOne(x => x.Event)
@@ -57,7 +58,17 @@ namespace MeetupWebApp.Data
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(true);
 
+            modelBuilder.Entity<OrganizerReview>()
+                .HasOne(x => x.Organizer)
+                .WithMany(x => x.OrganizerReviews)
+                .HasForeignKey(x => x.OrganizerId)
+                .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<OrganizerReview>()
+                .HasOne(x => x.ReviewerUser)
+                .WithMany(x => x.LeftByUser)
+                .HasForeignKey(x => x.ReviewUserId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
 
     }

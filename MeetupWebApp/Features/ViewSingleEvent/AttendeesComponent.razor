@@ -4,8 +4,6 @@
 @using System.Security.Claims
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-
-
 @if (Users is not null && Users.Count > 0)
 {
     <h6>Attendees</h6>
@@ -17,7 +15,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-6 col-12">
                     <div class="card border-0">
                         <p class="card-title fw-bold">
-                            @user.Username  @(int.Parse(CurrentUserId) == (Event?.OrganizerId ?? 0) ? "(Organizer)":"") @if(CurrentEmail == user.Email)
+                            @user.Username  @(CurrentUserId.ToString() == Event?.OrganizerId.ToString() ? "(Organizer)":"") @if(CurrentEmail == user.Email)
                             {
                                 <span class="badge bg-primary m-1">you</span>
                             }

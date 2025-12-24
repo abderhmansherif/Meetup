@@ -1,0 +1,8 @@
+﻿.star.hovered {
+    color: orange;
+    cursor: pointer;
+}
+
+.star {
+    font-size: 25px;
+}

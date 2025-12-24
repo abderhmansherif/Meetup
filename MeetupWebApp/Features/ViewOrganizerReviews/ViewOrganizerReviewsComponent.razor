@@ -1,0 +1,84 @@
+﻿@page "/org/{OrgId:int}/reviews"
+@using MeetupWebApp.Data.Entities
+@using Microsoft.AspNetCore.Components.Authorization
+@rendermode InteractiveServer
+@inject ViewOrganizerReviewsService OrganizerReviewsService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inherits BaseComponent
+
+<h3>Organizer Reviews For: @Organizer?.Username</h3>
+
+<div class="d-flex justify-content-center mb-3">
+    <button class="btn btn-primary" @onclick="LeaveReview">Leave a Review</button>
+</div>
+
+@if(Reviews is not null && Reviews.Count > 0)
+{
+     <div class="container">
+        <div class="row">
+            @foreach (var review in Reviews)
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-subtitle text-muted">Review by: @review.ReviewerUser?.Username</h6>
+                        <div class="stars">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <span class="star @(i <= review.Rating ? "selected" : "")">&#9733;</span>
+                            }
+                        </div>
+                        <p class="card-text mt-2">@review?.Comment</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>    
+}
+else
+{
+    <div class="alert alert-info" role="alert">
+        No reviews found for this organizer right now.
+    </div>
+}
+
+<DialogComponent @ref="DialogComponent" Title="Login First">
+    <Content>
+        <ExternalLoginButtonsComponent></ExternalLoginButtonsComponent>
+    </Content>
+</DialogComponent>
+
+
+@code {
+    [Parameter]
+    public int OrgId { get; set; }
+    public User? Organizer;
+    public List<OrganizerReview>? Reviews;
+    private DialogComponent? DialogComponent;
+    public AuthenticationState? authenticationState;
+    public bool IsAuthorized { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        IsAuthorized = authenticationState.User?.Identity?.IsAuthenticated ?? false;
+
+        if(OrgId > 0)
+        {
+            Organizer = await OrganizerReviewsService.GetOrganizerByIdAsync(OrgId);
+            Reviews = await OrganizerReviewsService.GetOrganizerReviewsAsync(OrgId);
+        }
+    }
+
+    public void LeaveReview()
+    {
+        if (IsAuthorized)
+        {
+               NavigationManager.NavigateTo($"/org/{OrgId}/leave-review");
+        }
+        else
+        {
+            DialogComponent?.ShowModel();
+        }
+    }
+}

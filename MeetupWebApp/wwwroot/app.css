@@ -58,3 +58,21 @@ h1:focus {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+.stars {
+    font-size: 25px;
+    display: flex;
+    -webkit-align-items: inherit;
+    align-items: inherit;
+}
+
+.star {
+    color: lightgray;
+    margin: 2px;
+}
+
+.star.selected {
+    color: gold;
+}
+
+   
