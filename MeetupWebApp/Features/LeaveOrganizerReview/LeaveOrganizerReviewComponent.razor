@@ -1,6 +1,7 @@
 ﻿@page "/org/{OrgId:int}/leave-review"
 @using MeetupWebApp.Data.Entities
 @inject LeaveOrganizerReviewService LeaveOrganizerReviewService
+@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 <h3>Leave a Review For: @Organizer?.Username</h3>
@@ -59,7 +60,10 @@
 
     public async Task HandleReviewSubmission()
     {
-
+        if (await LeaveOrganizerReviewService.ReviewOrganaizerAsync(organizerReview))
+        {
+            NavigationManager.NavigateTo("/")
+        }
     }
 
     public void SetRating(int index)
