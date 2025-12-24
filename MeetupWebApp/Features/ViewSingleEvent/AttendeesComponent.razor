@@ -15,7 +15,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-6 col-12">
                     <div class="card border-0">
                         <p class="card-title fw-bold">
-                            @user.Username  @(CurrentUserId.ToString() == Event?.OrganizerId.ToString() ? "(Organizer)":"") @if(CurrentEmail == user.Email)
+                            @user.Username  @(user.Id.ToString() == Event?.OrganizerId.ToString() ? "(Organizer)":"") @if(CurrentEmail == user.Email)
                             {
                                 <span class="badge bg-primary m-1">you</span>
                             }
@@ -42,9 +42,6 @@ else
 
     public string CurrentEmail = string.Empty;
 
-    public string CurrentUserId = string.Empty;
-
-
     public AuthenticationState? AuthenticationState;
 
     protected override async Task OnInitializedAsync()
@@ -53,7 +50,6 @@ else
         if (AuthenticationState.User?.Identity?.IsAuthenticated ?? false)
         {
             CurrentEmail = AuthenticationState.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value ?? string.Empty;
-            CurrentUserId = AuthenticationState.User?.Claims?.FirstOrDefault(x => x.Type == SharedHelper.GetUserIdClaimType())?.Value ?? string.Empty;
         }
     }
 }

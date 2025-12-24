@@ -2,46 +2,68 @@
 @using MeetupWebApp.Data.Entities
 @inject LeaveOrganizerReviewService LeaveOrganizerReviewService
 @inject NavigationManager NavigationManager
+@inherits BaseComponent
+@attribute [Authorize]
 @rendermode InteractiveServer
 
 <h3>Leave a Review For: @Organizer?.Username</h3>
 
-<EditForm Model="organizerReview" OnValidSubmit="@HandleReviewSubmission">
-    <DataAnnotationsValidator />
-    <ValidationSummary class="alert alert-danger" />
+@if (SuccessSubmission)
+{
+    <div class="alert alert-success" role="alert">
+        Your review has been submitted successfully!
+    </div>
+}
+else if (FailedSubmission)
+{
+    <div class="alert alert-danger" role="alert">
+        Error submitting review @ErrorMessage
+    </div>
 
-    <div class="mb-3">
-        <label for="rating" class="form-label d-block">Set Rating:</label>
+}
+else
+{
+    <EditForm Model="organizerReview" OnValidSubmit="@HandleReviewSubmission">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="alert alert-danger" />
 
-        <div id="rating" class="d-flex align-items-center">
-            @for (int i = 1; i <= 5; i++)
-            {
-                int starIndex = i;
-                <span class="star @(i <= organizerReview.Rating ? "selected" : "") @(i <= HoverRating ? "hovered" : "")"
-                      @onclick="() => SetRating(starIndex)"
-                      @onmouseover="() => OnSetOver(starIndex)"
-                      @onmouseout="OnStarMouseOut">
-                    &#9733;
-                </span>
-            }
-            <ValidationMessage For="@(() => organizerReview.Rating)" class="text-danger" />
+        <div class="mb-3">
+            <label for="rating" class="form-label d-block">Set Rating:</label>
+
+            <div id="rating" class="d-flex align-items-center">
+                @for (int i = 1; i <= 5; i++)
+                {
+                    int starIndex = i;
+                    <span class="star @(i <= organizerReview.Rating ? "selected" : "") @(i <= HoverRating ? "hovered" : "")"
+                          @onclick="() => SetRating(starIndex)"
+                          @onmouseover="() => OnSetOver(starIndex)"
+                          @onmouseout="OnStarMouseOut">
+                        &#9733;
+                    </span>
+                }
+                <ValidationMessage For="@(() => organizerReview.Rating)" class="text-danger" />
+            </div>
         </div>
-    </div>
 
-    @* collect review text *@
-    <div class="mb-3">
-        <label for="reviewText" class="form-label">Your Review (Optional):</label>
-        <InputTextArea id="reviewText"
-                       class="form-control"
-                       @bind-Value="organizerReview.Comment"
-                       rows="5" placeholder="Share your thoughts about the organizer." />
-        <ValidationMessage For="@(() => organizerReview.Comment)" class="text-danger" />
-    </div>
+        @* collect review text *@
+        <div class="mb-3">
+            <label for="reviewText" class="form-label">Your Review (Optional):</label>
+            <InputTextArea id="reviewText"
+                           class="form-control"
+                           @bind-Value="organizerReview.Comment"
+                           rows="5" placeholder="Share your thoughts about the organizer." />
+            <ValidationMessage For="@(() => organizerReview.Comment)" class="text-danger" />
+        </div>
 
-    <button type="submit" class="btn btn-primary btn-lg">
-        Submit Review
-    </button>
-</EditForm>
+        <button type="submit" class="btn btn-primary btn-lg">
+            Submit Review
+        </button>
+    </EditForm>
+
+}
+
+
+
 
 @code {
     [Parameter]
@@ -49,6 +71,9 @@
     public User? Organizer;
     public OrganizerReview organizerReview = new OrganizerReview();
     public int HoverRating { get; set; } = 0;
+    public bool SuccessSubmission { get; set; } = false;
+    public bool FailedSubmission { get; set; } = false;
+    public string ErrorMessage { get; set; } = string.Empty;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -60,9 +85,22 @@
 
     public async Task HandleReviewSubmission()
     {
-        if (await LeaveOrganizerReviewService.ReviewOrganaizerAsync(organizerReview))
+        organizerReview.ReviewDate = DateTime.Now;
+        organizerReview.OrganizerId = OrgId;
+        organizerReview.ReviewUserId = int.Parse(base.UserId);
+
+        ErrorMessage = await LeaveOrganizerReviewService.ReviewOrganaizerAsync(organizerReview);
+
+        if (string.IsNullOrEmpty(ErrorMessage))
         {
-            NavigationManager.NavigateTo("/")
+            SuccessSubmission = true;
+            FailedSubmission = false;
+            organizerReview = new();
+        }
+        else
+        {
+            FailedSubmission = true;
+            SuccessSubmission = false;
         }
     }
 
