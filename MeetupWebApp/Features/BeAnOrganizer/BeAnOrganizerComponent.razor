@@ -54,7 +54,7 @@ else
     public void YourMeetups()
     {
         // Another Time later
-        if(base.IsAuthentdicated)
+        if(base.IsAuthentdicated && base.IsOrganizer)
         {
             NavManager.NavigateTo($"/your-meetups/{int.Parse(base.UserId)}", true);
         }

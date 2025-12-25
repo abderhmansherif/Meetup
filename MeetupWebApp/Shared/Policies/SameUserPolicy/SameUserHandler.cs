@@ -24,13 +24,15 @@ namespace MeetupWebApp.Shared.Policies.SameUserPolicy
 
             // 2) Get userId from route
             var httpContext = _httpContextAccessor.HttpContext;
-            var routeUserId = httpContext?.Request?.RouteValues["userId"]?.ToString();
 
-            if (string.IsNullOrEmpty(routeUserId))
+            var routeUserId = httpContext?.Request?.RouteValues["userId"]?.ToString();
+            var routeOrgId = httpContext?.Request?.RouteValues["orgId"]?.ToString();
+
+            if (string.IsNullOrEmpty(routeUserId) && string.IsNullOrEmpty(routeOrgId))
                 return Task.CompletedTask;
 
             // 3) Compare
-            if (routeUserId == authenticatedUserId)
+            if (routeUserId == authenticatedUserId || routeOrgId == authenticatedUserId)
                 context.Succeed(requirement);
 
             return Task.CompletedTask;

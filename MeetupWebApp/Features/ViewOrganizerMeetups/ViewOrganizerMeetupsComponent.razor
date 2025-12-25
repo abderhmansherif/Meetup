@@ -4,66 +4,93 @@
 @inject ViewOrganizerMeetupsService ViewOrganizerMeetupsService
 @attribute [Authorize("SameUser")]
 
-
-<h3>Your Meetups</h3>
+<PageTitle>Your Meetups</PageTitle>
+<h3>Your Current Meetups</h3>
 
 @if (currentMeetups is not null && currentMeetups.Count > 0)
 {
-    <h3>Your Current Meetups</h3>
-    //View meetups as cards with modern bootstrap
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        @foreach (var currentMeetup in currentMeetups)
+
+    //View meetups as list in a table with modern bootstrap
+    @foreach (var ev in currentMeetups)
+    {
+        var eventImage = ev.ImageUrl;
+        if (string.IsNullOrWhiteSpace(eventImage))
         {
-            <div class="col">
-                <div class="card h-100">
-                    <img src="@currentMeetup.ImageUrl" class="card-img-top" alt="@currentMeetup.Title" />
-                    <div class="card-body">
-                <h5 class="card-title">
-                    @currentMeetup.Title
-                </h5>
-                <p class="card-text">
-                    @currentMeetup.Description
-                </p>
-                    </div>
-                    <div class="card-footer">
-                <small class="text-muted">Date: @currentMeetup.BeginDate.ToString("MMMM dd, yyyy")</small>
-                    </div>
-                </div>
+            eventImage = "/images/image-placeholder.jpg";
+        }
+    <div class="border p-3 mb-3 d-flex align-items-center">
+        <!-- Image -->
+        <a href="/events/@ev.Id">
+            <div class="me-3">
+                <img src="@eventImage" alt="Product Image" class="img-thumbnail" 
+                    style="width:120px; height:auto; object-fit: cover;">
             </div>
-            }
+        </a>
+
+        <!-- Details -->
+        <div class="flex-grow-1">
+            <a href="/events/@ev.Id" class="text-decoration-none text-dark">
+                <h5>@ev.Title</h5>
+            </a>
+            <p class="mt-1 mb-0 text-muted">@($"{ev.BeginDate:ddd MMM d} - {@ev.BeginTime:h:mm tt}".ToUpper())</p>
         </div>
- }
-else if(pastMeetups is not null && pastMeetups.Count > 0)
+       </div>
+
+    }
+}
+else
+{
+    <div class="alert alert-info" role="alert">
+        No Current meetups found for your organization.
+    </div>
+}
+
+<hr />
+
+<h3>Your Past Meetups</h3>
+
+@if(pastMeetups is not null && pastMeetups.Count > 0)
 {
     <h3>Your Past Meetups</h3>
 
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        @foreach (var meetup in pastMeetups)
+    @foreach (var ev in pastMeetups)
+    {
+        var eventImage = ev.ImageUrl;
+        if (string.IsNullOrWhiteSpace(eventImage))
         {
-            <div class="col">
-                <div class="card h-100">
-                    <img src="@meetup.ImageUrl" class="card-img-top" alt="@meetup.Title" />
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            @meetup.Title
-                        </h5>
-                        <p class="card-text">
-                            @meetup.Description
-                        </p>
-                    </div>
-                    <div class="card-footer">
-                        <small class="text-muted">Date: @meetup.EndDate.ToString("MMMM dd, yyyy")</small>
-                    </div>
-                </div>
-            </div>
+            eventImage = "/images/image-placeholder.jpg";
         }
-    </div>
+        <div class="border p-3 mb-3 d-flex align-items-center">
+            <!-- Image -->
+            <a href="/events/@ev.Id">
+                <div class="me-3">
+                    <img src="@eventImage" alt="Product Image" class="img-thumbnail"
+                            style="width:120px; height:auto; object-fit: cover;">
+                </div>
+            </a>
+
+            <!-- Details -->
+            <div class="flex-grow-1">
+                <a href="/events/@ev.Id" class="text-decoration-none text-dark">
+                    <h5>@ev.Title</h5>
+                </a>
+                <p class="mt-1 mb-0 text-muted">@($"{ev.BeginDate:ddd MMM d} - {@ev.BeginTime:h:mm tt}".ToUpper())</p>
+            </div>
+        </div>
+
+    }
+
 
 }
-
 else
 {
-    // No Meetups Found message cool with bootstrap
+    <div class="alert alert-info" role="alert">
+        No Past meetups found for your organization.
+    </div>
+}
+
+@if(currentMeetups is null && (currentMeetups?.Count??0) == 0 && pastMeetups is null && (pastMeetups?.Count?? 0) == 0)
+{
     <div class="alert alert-info" role="alert">
         No meetups found for your organization.
     </div>
