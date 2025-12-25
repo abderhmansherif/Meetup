@@ -76,6 +76,7 @@ namespace MeetupWebApp.Shared.Endpoints
                 return;
             });
 
+            //If the User is already authenticated, this endpoint will elevate his role to Organizer
             app.MapGet("/BeOrganizer/{userId}", async (HttpContext ctx, string userId) =>
             {
                 string returnUrl = ctx.Request.Query["returnurl"].ToString();

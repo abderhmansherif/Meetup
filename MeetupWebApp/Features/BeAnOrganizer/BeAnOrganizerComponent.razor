@@ -1,5 +1,6 @@
 ﻿@inherits BaseComponent
 @inject NavigationManager NavigationManager
+@inject NavigationManager NavManager
 
 
 @if(base.IsOrganizer)
@@ -37,7 +38,7 @@ else
     {
         if(base.IsAuthentdicated)
         {
-            // Just Change the Role only
+            // Just Change the User Role only
             var Url = NavigationManager.Uri.ToString();
             var Encoded = HttpUtility.UrlEncode(Url);
 
@@ -45,7 +46,7 @@ else
         }
         else
         {
-            
+
             DialogComp.ShowModel();
         }
     }
@@ -53,5 +54,9 @@ else
     public void YourMeetups()
     {
         // Another Time later
+        if(base.IsAuthentdicated)
+        {
+            NavManager.NavigateTo($"/your-meetups/{int.Parse(base.UserId)}", true);
+        }
     }
 }

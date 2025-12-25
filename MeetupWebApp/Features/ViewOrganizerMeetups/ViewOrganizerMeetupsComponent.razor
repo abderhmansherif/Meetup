@@ -1,0 +1,94 @@
+﻿@page "/your-meetups/{orgId:int}"
+@using MeetupWebApp.Shared.ViewModels
+@using System.Collections
+@inject ViewOrganizerMeetupsService ViewOrganizerMeetupsService
+@attribute [Authorize("SameUser")]
+
+
+<h3>Your Meetups</h3>
+
+@if (currentMeetups is not null && currentMeetups.Count > 0)
+{
+    <h3>Your Current Meetups</h3>
+    //View meetups as cards with modern bootstrap
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var currentMeetup in currentMeetups)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    <img src="@currentMeetup.ImageUrl" class="card-img-top" alt="@currentMeetup.Title" />
+                    <div class="card-body">
+                <h5 class="card-title">
+                    @currentMeetup.Title
+                </h5>
+                <p class="card-text">
+                    @currentMeetup.Description
+                </p>
+                    </div>
+                    <div class="card-footer">
+                <small class="text-muted">Date: @currentMeetup.BeginDate.ToString("MMMM dd, yyyy")</small>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+ }
+else if(pastMeetups is not null && pastMeetups.Count > 0)
+{
+    <h3>Your Past Meetups</h3>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var meetup in pastMeetups)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    <img src="@meetup.ImageUrl" class="card-img-top" alt="@meetup.Title" />
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            @meetup.Title
+                        </h5>
+                        <p class="card-text">
+                            @meetup.Description
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">Date: @meetup.EndDate.ToString("MMMM dd, yyyy")</small>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+}
+
+else
+{
+    // No Meetups Found message cool with bootstrap
+    <div class="alert alert-info" role="alert">
+        No meetups found for your organization.
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int OrgId { get; set; }
+
+    public List<EventViewModel>? meetups;
+    public List<EventViewModel>? pastMeetups;
+    public List<EventViewModel>? currentMeetups;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var now = DateTime.Now;
+        if (OrgId > 0)
+        {
+            meetups = await ViewOrganizerMeetupsService.GetMeetupsAsync(OrgId);
+
+            pastMeetups = meetups.Where(x => (x.EndDate < DateOnly.FromDateTime(now)) || 
+                        (x.EndDate == DateOnly.FromDateTime(now) && x.EndTime <= TimeOnly.FromDateTime(now))).ToList();
+
+            currentMeetups = meetups.Where(x => (x.EndDate > DateOnly.FromDateTime(now)) || 
+                        (x.EndDate == DateOnly.FromDateTime(now) && x.EndTime > TimeOnly.FromDateTime(now))).ToList();
+        }
+    }
+}
