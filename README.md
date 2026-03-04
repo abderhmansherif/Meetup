@@ -46,38 +46,6 @@ Shared stuff (auth, policies, base components, enums, helpers) stays in `Shared/
 Data layer is clean and separate.  
 This way if I want to tweak “LeaveAComment”, I just open that folder – everything is there.
 
-### Project Structure (the important parts)
-
-MeetupWebApp/
-├── Data/
-│   ├── Entities/          ← User, Event, RSVP, Transaction, Comment, OrganizerReview...
-│   └── ApplicationDbContext.cs
-├── Features/
-│   ├── CreateEvent/
-│   ├── EditEvents/
-│   ├── DeleteEvent/
-│   ├── DiscoverEvents/
-│   ├── ViewSingleEvent/   ← with AttendeesComponent
-│   ├── RSVPEvent/
-│   ├── CancelRSVP/
-│   ├── MakePayment/       ← endpoints + payment status + refunds
-│   ├── LeaveAComment/
-│   ├── LeaveOrganizerReview/
-│   ├── ViewOrganizerReviews/ + average
-│   ├── ViewOrganizerMeetups/
-│   ├── ManageUserRSVPEvents/
-│   ├── ViewTransactions/
-│   └── BeAnOrganizer/
-├── Shared/
-│   ├── Components/        ← reusable dialogs, nav, search, etc.
-│   ├── Policies/
-│   ├── Services/
-│   ├── Authentication/
-│   └── Enums/
-├── Migrations/            ← all the evolution steps (payments, refunds, reviews...)
-├── wwwroot/images/events/ ← sample event photos
-└── Program.cs + Routes + App.razor
-
 ### Tech I used
 
 - .NET 8 Blazor Server
