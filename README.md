@@ -48,7 +48,7 @@ This way if I want to tweak “LeaveAComment”, I just open that folder – eve
 
 ### Tech I used
 
-- .NET 8 Blazor Server
+- .NET 10 Blazor Server
 - Entity Framework Core + Code-First + Migrations
 - AutoMapper
 - ASP.NET Core Identity + Google OAuth
