@@ -5,6 +5,13 @@
 This is my side project – basically Meetup.com but built from scratch using **Blazor Server** (.NET).  
 I wanted something where people can actually discover events, RSVP, pay if needed, leave reviews for the organizer, and everything feels smooth. No fancy frontend framework, just pure Blazor Server + vertical slices so the code stays sane even as it grows.
 
+<img width="1366" height="616" alt="Capture" src="https://github.com/user-attachments/assets/9b300887-c226-42ef-b682-affdf32b2de6" />
+<img width="1345" height="645" alt="Capture12" src="https://github.com/user-attachments/assets/961dbe6a-a73b-4211-ba20-bd0635263b8e" />
+<img width="1344" height="646" alt="Capture01" src="https://github.com/user-attachments/assets/c01fc7dc-85f5-4ace-931f-dbd757abfd5e" />
+
+<img width="1366" height="566" alt="sa" src="https://github.com/user-attachments/assets/7117528d-1e03-46e3-a7aa-3dc0faae2323" />
+
+
 ### What it does (the real capabilities)
 
 **For normal users:**
